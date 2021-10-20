@@ -6,6 +6,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 
 contract MarketPlace{
         
+    //Any arbitrary NFT can be listed with a price
+    //Listing requires transferring ownership to this address
+    //
     struct marketListing{
         uint256 price;
         uint256 initialOwner;
