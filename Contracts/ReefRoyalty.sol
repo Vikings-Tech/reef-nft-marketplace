@@ -6,10 +6,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "./IERC2981.sol";
-import "./Splitter.sol";
 
-contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorage,PaymentSplitter{
+
+contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorage{
     
     address creator;
     
@@ -17,48 +16,42 @@ contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorag
     
     Counters.Counter private tokenId_;
     
-     mapping(uint256=>uint8) tokenRoyalty;
+     uint tokenRoyalty;
      
      modifier onlyCreator() {
          require(msg.sender == creator,"Royalty Contract : Caller is not creator");
          _;
      }
      
-     constructor(string memory name_,string memory symbol_,address creator_) ERC721(name_,symbol_) {
+     constructor(string memory name_,string memory symbol_,address creator_,uint royalty_) ERC721(name_,symbol_) {
         creator = creator_;
+        tokenRoyalty = royalty_;
      }
      
     
-    function mint(uint8 royalty) external onlyCreator() {
-        require(royalty <= 100,"ReefRoyalty: Can't have more than 100% royalty");
+    function mint() external onlyCreator() {
         tokenId_.increment();
         uint256 tokenId = tokenId_.current();
         _mint(msg.sender,tokenId);
-        tokenRoyalty[tokenId] = royalty;
     }
     
-    function royaltySplitter(address[] memory payees, uint256[] memory shares_) external onlyCreator{
-        setBeneficiaries(payees,shares_);
-    }
-    
-    function royaltyInfo(uint256 _tokenId,uint256 _salePrice) external view returns (
-        address receiver,
+    function royaltyInfo(uint256 _salePrice) external view returns (
         uint256 royaltyAmount
     ){
-        receiver = address(this);
-        royaltyAmount = (_salePrice*tokenRoyalty[_tokenId])/100;
+        royaltyAmount = (_salePrice*tokenRoyalty)/100;
     }
     
-    function pendingPayment(IERC20 token, address account) external view returns(uint256){
-        uint256 totalReceived = token.balanceOf(address(this)) + totalReleased(token);
-        return totalReceived * shares(account) / totalShares() - released(token, account);
+    receive() external payable{
+        
     }
     
-    function pendingPayment(address account) external view returns(uint256){
-        uint256 totalReceived = address(this).balance + totalReleased();
-        return totalReceived * shares(account) / totalShares() - released(account);
+    function withdraw() external onlyCreator{
+        payable(creator).transfer(address(this).balance);
     }
-
+    function getCreator() external view returns(address){
+        return creator;
+    }
+    
      function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         override(ERC721, ERC721Enumerable)

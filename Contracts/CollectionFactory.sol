@@ -31,8 +31,10 @@ contract CollectionFactory is Ownable{
         payable(owner()).transfer(address(this).balance);
     }
     
-    function createCollection(string calldata name_,string calldata symbol_,string calldata metaData) external payable{
-        ReefRoyalty NFTContract = new ReefRoyalty(name_,symbol_,msg.sender);
+    function createCollection(string calldata name_,string calldata symbol_,string calldata metaData,uint256 royalty) external payable{
+        require(msg.value >= price,"ReefRoyalty: Pay the required amount");
+        require(royalty < 50,"ReefRoyalty: Can't have more than 50% royalty amount");
+        ReefRoyalty NFTContract = new ReefRoyalty(name_,symbol_,msg.sender,royalty);
         contractInfo memory Info = contractInfo(address(NFTContract),
         metaData
         );

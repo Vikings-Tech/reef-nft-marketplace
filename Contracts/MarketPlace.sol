@@ -6,11 +6,9 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/introspection/ERC165Checker.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
-import "./IERC2981.sol";
-
+import "./IRRoyalty.sol";
 contract MarketPlace is ReentrancyGuard{
     
-    bytes4 public constant ERC2981INTERFACE = type(IERC2981).interfaceId;
     bytes4 public constant ERC721INTERFACE = type(IERC721).interfaceId;
 
     using Counters for Counters.Counter;
@@ -42,7 +40,6 @@ contract MarketPlace is ReentrancyGuard{
   );
 
 
-  
   /* Places an item for sale on the marketplace */
   function createMarketItem(
     address nftContract,
@@ -53,11 +50,12 @@ contract MarketPlace is ReentrancyGuard{
 
     _itemIds.increment();
     uint256 itemId = _itemIds.current();
-  
+    address creator = IRRoyalty(nftContract).getCreator();
     idToMarketItem[itemId] =  MarketItem(
       itemId,
       nftContract,
       tokenId,
+      payable(creator),
       payable(msg.sender),
       payable(address(0)),
       price,
@@ -86,8 +84,14 @@ contract MarketPlace is ReentrancyGuard{
     uint price = idToMarketItem[itemId].price;
     uint tokenId = idToMarketItem[itemId].tokenId;
     require(msg.value == price, "Please submit the asking price in order to complete the purchase");
-
-    idToMarketItem[itemId].seller.transfer(msg.value);
+    if(idToMarketItem[itemId].creator == idToMarketItem[itemId].seller){
+        payable(idToMarketItem[itemId].nftContract).transfer(msg.value);
+    }
+    else{
+        uint royalty = IRRoyalty(idToMarketItem[itemId].nftContract).royaltyInfo(msg.value);
+        payable(idToMarketItem[itemId].nftContract).transfer(royalty);
+        idToMarketItem[itemId].seller.transfer(msg.value-royalty);
+    }
     IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
     idToMarketItem[itemId].owner = payable(msg.sender);
     idToMarketItem[itemId].sold = true;
@@ -158,11 +162,7 @@ contract MarketPlace is ReentrancyGuard{
       }
     }
     return items;
-  }
-    function checkRoyalties(address _contract) internal view returns (bool) {
-    (bool success) = ERC165Checker.supportsInterface(_contract,ERC2981INTERFACE);
-    return success;
     }
-    
+
     
 }
