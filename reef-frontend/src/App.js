@@ -27,6 +27,7 @@ function App() {
     newEvmProvider.api.on('disconnected', () => setIsApiConnected(false));
     newEvmProvider.api.on('ready', async () => {
       const accounts = await web3Accounts();
+      console.log(accounts);
       setAccounts(accounts);
 
     })
