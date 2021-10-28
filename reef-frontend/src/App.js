@@ -4,6 +4,7 @@ import AppContext from './Components/AppContext';
 import { web3Accounts, web3Enable, } from "@polkadot/extension-dapp"
 import { Provider, Signer} from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/rpc-provider';
+import abi from './ABI.json';
 import { useState, useEffect } from 'react';
 import { ethers,Contract } from 'ethers';
 
