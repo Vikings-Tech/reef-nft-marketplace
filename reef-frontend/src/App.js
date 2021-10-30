@@ -79,12 +79,18 @@ function App() {
     // console.log(signer.getAddress())
   }
 
+  async function setStorage(){
+    const storageContract = new Contract("0x667F2F7A8F634117C2F187f1A2a06c44ADD84acC", abi, signer);
+    const result = await storageContract.store(5);
+    const receipt = await result.wait();
+    console.log(receipt);
+  }
 
 
   return (
     <>
       <Navbar />
-      <button type="button" className="button" onClick={retrieveStorage}>Get Storage</button>
+      <button type="button" className="button" onClick={setStorage}>Get Storage</button>
       <Home />
     </>
   );
