@@ -6,39 +6,46 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-
+import "./IRRoyalty.sol";
 
 contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorage{
     
     address creator;
     
     using Counters for Counters.Counter;
-    
     Counters.Counter private tokenId_;
+  
     
-     uint tokenRoyalty;
-     
+     mapping(uint=>uint) royalty;
+
      modifier onlyCreator() {
          require(msg.sender == creator,"Royalty Contract : Caller is not creator");
          _;
      }
      
-     constructor(string memory name_,string memory symbol_,address creator_,uint royalty_) ERC721(name_,symbol_) {
+    constructor(string memory name_,string memory symbol_,address creator_) ERC721(name_,symbol_) {
         creator = creator_;
-        tokenRoyalty = royalty_;
-     }
-     
+    }
     
-    function mint() external onlyCreator() {
+    
+    function mint(string calldata metaHash,uint256 royalty_) external onlyCreator() {
         tokenId_.increment();
         uint256 tokenId = tokenId_.current();
         _mint(msg.sender,tokenId);
+        _setTokenURI(tokenId,metaHash);
+        royalty[tokenId] = royalty_;
     }
     
-    function royaltyInfo(uint256 _salePrice) external view returns (
+    function getTokenRoyalty(uint256 _tokenId) external view returns(uint256){
+        return royalty[_tokenId];
+    }
+    
+    function royaltyInfo(uint256 _tokenId,uint256 _salePrice) external view returns (
+        address receiver,
         uint256 royaltyAmount
     ){
-        royaltyAmount = (_salePrice*tokenRoyalty)/100;
+        receiver = creator;
+        royaltyAmount = (_salePrice*royalty[_tokenId])/100;
     }
     
     receive() external payable{
@@ -48,6 +55,7 @@ contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorag
     function withdraw() external onlyCreator{
         payable(creator).transfer(address(this).balance);
     }
+    
     function getCreator() external view returns(address){
         return creator;
     }
@@ -72,13 +80,12 @@ contract ReefRoyalty is Ownable,ReentrancyGuard,ERC721Enumerable,ERC721URIStorag
         return super.tokenURI(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721,ERC721Enumerable) returns (bool) {
+        return
+            interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IERC721Enumerable).interfaceId ||
+            interfaceId == type(IERC2981).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
 }

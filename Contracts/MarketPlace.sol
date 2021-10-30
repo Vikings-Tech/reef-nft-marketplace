@@ -7,9 +7,12 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "./IRRoyalty.sol";
+
 contract MarketPlace is ReentrancyGuard{
     
+    
     bytes4 public constant ERC721INTERFACE = type(IERC721).interfaceId;
+    bytes4 public constant ERC2981INTERFACE = type(IERC2981).interfaceId;
 
     using Counters for Counters.Counter;
     Counters.Counter private _itemIds;
@@ -24,56 +27,84 @@ contract MarketPlace is ReentrancyGuard{
     address payable seller;
     address payable owner;
     uint256 price;
+    uint256 royalty;
     bool sold;
   }
 
-  mapping(uint256 => MarketItem) private idToMarketItem;
+    mapping(uint256 => MarketItem) private idToMarketItem;
 
-  event MarketItemCreated (
-    uint indexed itemId,
-    address indexed nftContract,
-    uint256 indexed tokenId,
-    address seller,
-    address owner,
-    uint256 price,
-    bool sold
-  );
+    event MarketItemCreated (
+        uint indexed itemId,
+        address indexed nftContract,
+        uint256 indexed tokenId,
+        address seller,
+        address owner,
+        uint256 price
+    );
 
+    event MarketItemSold(
+        uint256 itemId,
+        address indexed nftContract,
+        address indexed seller,
+        address indexed newOwner
+        );
+    
+    event MarketItemUnlisted(
+        uint256 itemId
+        );
 
-  /* Places an item for sale on the marketplace */
-  function createMarketItem(
+    /* Places an item for sale on the marketplace */
+    function createMarketItem(
     address nftContract,
     uint256 tokenId,
     uint256 price
-  ) public payable nonReentrant {
+    ) public payable nonReentrant {
     require(price > 0, "Price must be at least 1 wei");
-
+    require(ERC165Checker.supportsInterface(nftContract,ERC721INTERFACE),"Contract needs to be ERC721");
     _itemIds.increment();
     uint256 itemId = _itemIds.current();
-    address creator = IRRoyalty(nftContract).getCreator();
-    idToMarketItem[itemId] =  MarketItem(
-      itemId,
-      nftContract,
-      tokenId,
-      payable(creator),
-      payable(msg.sender),
-      payable(address(0)),
-      price,
-      false
-    );
-
+    
+    if (ERC165Checker.supportsInterface(nftContract,ERC2981INTERFACE)){
+        (address creator,uint256 royaltyAmount) = IERC2981(nftContract).royaltyInfo(tokenId,price);
+        idToMarketItem[itemId] =  MarketItem(
+                                      itemId,
+                                      nftContract,
+                                      tokenId,
+                                      payable(creator),
+                                      payable(msg.sender),
+                                      payable(address(0)),
+                                      price,
+                                      royaltyAmount,
+                                      false
+                                    );
+    }
+    else{
+        address creator = msg.sender;
+        uint royaltyAmount = 0;
+        idToMarketItem[itemId] =  MarketItem(
+                                      itemId,
+                                      nftContract,
+                                      tokenId,
+                                      payable(creator),
+                                      payable(msg.sender),
+                                      payable(address(0)),
+                                      price,
+                                      royaltyAmount,
+                                      false
+                                    );
+    }
+    
     IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
-
+    
     emit MarketItemCreated(
       itemId,
       nftContract,
       tokenId,
       msg.sender,
       address(0),
-      price,
-      false
+      price
     );
-  }
+    }
 
   /* Creates the sale of a marketplace item */
   /* Transfers ownership of the item, as well as funds between parties */
@@ -81,21 +112,20 @@ contract MarketPlace is ReentrancyGuard{
     address nftContract,
     uint256 itemId
     ) public payable nonReentrant {
-    uint price = idToMarketItem[itemId].price;
-    uint tokenId = idToMarketItem[itemId].tokenId;
-    require(msg.value == price, "Please submit the asking price in order to complete the purchase");
-    if(idToMarketItem[itemId].creator == idToMarketItem[itemId].seller){
-        payable(idToMarketItem[itemId].nftContract).transfer(msg.value);
+    MarketItem storage currentItem = idToMarketItem[itemId];
+    require(msg.value == currentItem.price, "Please submit the asking price in order to complete the purchase");
+    if(currentItem.creator == currentItem.seller ){
+        payable(currentItem.nftContract).transfer(msg.value);
     }
     else{
-        uint royalty = IRRoyalty(idToMarketItem[itemId].nftContract).royaltyInfo(msg.value);
-        payable(idToMarketItem[itemId].nftContract).transfer(royalty);
-        idToMarketItem[itemId].seller.transfer(msg.value-royalty);
+        payable(currentItem.seller).transfer(currentItem.royalty);
+        currentItem.seller.transfer(msg.value-currentItem.royalty);
     }
-    IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
-    idToMarketItem[itemId].owner = payable(msg.sender);
-    idToMarketItem[itemId].sold = true;
+    IERC721(nftContract).transferFrom(address(this), msg.sender, currentItem.tokenId);
+    currentItem.owner = payable(msg.sender);
+    currentItem.sold = true;
     _itemsSold.increment();
+    emit MarketItemSold(itemId,nftContract,currentItem.seller,currentItem.owner);
   }
 
   /* Returns all unsold market items */
@@ -116,7 +146,7 @@ contract MarketPlace is ReentrancyGuard{
     return items;
   }
 
-  /* Returns onlyl items that a user has purchased */
+  /* Returns only items that a user has purchased */
   function fetchMyNFTs() public view returns (MarketItem[] memory) {
     uint totalItemCount = _itemIds.current();
     uint itemCount = 0;
@@ -164,5 +194,12 @@ contract MarketPlace is ReentrancyGuard{
     return items;
     }
 
-    
+    function unlistItem(uint itemId) external{
+        require(idToMarketItem[itemId].seller == msg.sender,"Sender is not lister");
+        delete idToMarketItem[itemId];
+        idToMarketItem[itemId].sold = true;
+        emit MarketItemUnlisted(
+        itemId
+        );
+    }
 }
