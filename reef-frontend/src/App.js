@@ -5,6 +5,7 @@ import { web3Accounts, web3Enable, } from "@polkadot/extension-dapp"
 import { Provider, Signer } from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/rpc-provider';
 import FactoryAbi from './abi/FactoryABI.json';
+import NftABI from './abi/NftABI.json';
 import { useState, useEffect } from 'react';
 import { ethers, Contract } from 'ethers';
 
@@ -103,8 +104,7 @@ function App() {
   async function getUserCollections(){
     const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8",FactoryAbi,signer);
     const result = await factoryContract.getUserCollections();
-    const receipt = await result.wait();
-    console.log(receipt);
+    console.log(result);
   }
 
   async function editMetaData(index,newMetaData){
@@ -114,6 +114,43 @@ function App() {
     console.log(receipt);
   }
 
+  //NFT functions
+  async function mint(metaData,royaltyPercentage){
+    //Royalty should be < 20%
+    const nftContract = new Contract("contract address",NftABI,signer);
+    const result = await nftContract.mint(metaData,royaltyPercentage);
+    const receipt = await result.wait();
+    console.log(receipt);
+  }
+
+  async function tokenURI(tokenID){
+    const nftContract = new Contract("contract address",NftABI,signer);
+    const result = await nftContract.tokenURI(tokenID);
+    console.log(result);
+  }
+
+  async function getTokenRoyalty(tokenID){
+    const nftContract = new Contract("contract address",NftABI,signer);
+    const result = await nftContract.getTokenRoyalty(tokenID);
+    console.log(result);
+  }
+
+  //NFT contract functions required for marketplace
+
+  //This function needs to be called (successfully) before marketplace listing is called
+  async function approve(marketplaceAddress,tokenID){
+    const nftContract = new Contract("contract address",NftABI,signer);
+    const result = await nftContract.approve(marketplaceAddress,tokenID);
+    const receipt = await result.wait();
+    console.log(receipt);
+  }
+
+  async function getApproved(tokenID){
+    const nftContract = new Contract("contract address",NftABI,signer);
+    const result = await nftContract.getApproved(tokenID);
+    console.log(result);
+    //check if approved is the marketplace address, if yes go ahead with creating market listing
+  }
   return (
     <>
       <Navbar />
