@@ -14,61 +14,48 @@ import CreateCollection from './Pages/CreateCollection';
 function App() {
 
 
-  //NFT functions
-  async function mint(metaData, royaltyPercentage) {
-    //Royalty should be < 20%
-    const nftContract = new Contract("contract address", NftABI, signer);
-    const result = await nftContract.mint(metaData, royaltyPercentage);
-    const receipt = await result.wait();
-    console.log(receipt);
-  }
+  // //NFT functions
+  // async function mint(metaData,royaltyPercentage){
+  //   //Royalty should be < 20%
+  //   const nftContract = new Contract("contract address",NftABI,signer);
+  //   const result = await nftContract.mint(metaData,royaltyPercentage);
+  //   const receipt = await result.wait();
+  //   console.log(receipt);
+  // }
 
-  async function tokenURI(tokenID) {
-    const nftContract = new Contract("contract address", NftABI, signer);
-    const result = await nftContract.tokenURI(tokenID);
-    console.log(result);
-  }
+  // async function tokenURI(tokenID){
+  //   const nftContract = new Contract("contract address",NftABI,signer);
+  //   const result = await nftContract.tokenURI(tokenID);
+  //   console.log(result);
+  // }
 
-  async function getTokenRoyalty(tokenID) {
-    const nftContract = new Contract("contract address", NftABI, signer);
-    const result = await nftContract.getTokenRoyalty(tokenID);
-    console.log(result);
-  }
+  // async function getTokenRoyalty(tokenID){
+  //   const nftContract = new Contract("contract address",NftABI,signer);
+  //   const result = await nftContract.getTokenRoyalty(tokenID);
+  //   console.log(result);
+  // }
 
-  //NFT contract functions required for marketplace
+  // //NFT contract functions required for marketplace
 
-  //This function needs to be called (successfully) before marketplace listing is called
-  async function approve(marketplaceAddress, tokenID) {
-    const nftContract = new Contract("contract address", NftABI, signer);
-    const result = await nftContract.approve(marketplaceAddress, tokenID);
-    const receipt = await result.wait();
-    console.log(receipt);
-  }
+  // //This function needs to be called (successfully) before marketplace listing is called
+  // async function approve(marketplaceAddress,tokenID){
+  //   const nftContract = new Contract("contract address",NftABI,signer);
+  //   const result = await nftContract.approve(marketplaceAddress,tokenID);
+  //   const receipt = await result.wait();
+  //   console.log(receipt);
+  // }
 
-  async function getApproved(tokenID) {
-    const nftContract = new Contract("contract address", NftABI, signer);
-    const result = await nftContract.getApproved(tokenID);
-    console.log(result);
-    //check if approved is the marketplace address, if yes go ahead with creating market listing
-  }
+  // async function getApproved(tokenID){
+  //   const nftContract = new Contract("contract address",NftABI,signer);
+  //   const result = await nftContract.getApproved(tokenID);
+  //   console.log(result);
+  //   //check if approved is the marketplace address, if yes go ahead with creating market listing
+  // }
   return (
     <>
-      <Web3Provider>
-        <Navbar />
-        <Router>
-          <Switch>
-            <Route path="/createCollection">
-              <CreateCollection />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route>
-          </Switch>
-
-
-        </Router>
-      </Web3Provider>
-
+      <Navbar />
+      <button type="button" className="button" onClick={getCollectionCreationPrice}>Get Storage</button>
+      <Home />
     </>
   );
 }
