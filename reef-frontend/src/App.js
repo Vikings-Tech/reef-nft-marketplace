@@ -15,25 +15,11 @@ function App() {
 
 
   // //NFT functions
-  // async function mint(metaData,royaltyPercentage){
-  //   //Royalty should be < 20%
-  //   const nftContract = new Contract("contract address",NftABI,signer);
-  //   const result = await nftContract.mint(metaData,royaltyPercentage);
-  //   const receipt = await result.wait();
-  //   console.log(receipt);
-  // }
+  
 
-  // async function tokenURI(tokenID){
-  //   const nftContract = new Contract("contract address",NftABI,signer);
-  //   const result = await nftContract.tokenURI(tokenID);
-  //   console.log(result);
-  // }
+  
 
-  // async function getTokenRoyalty(tokenID){
-  //   const nftContract = new Contract("contract address",NftABI,signer);
-  //   const result = await nftContract.getTokenRoyalty(tokenID);
-  //   console.log(result);
-  // }
+
 
   // //NFT contract functions required for marketplace
 

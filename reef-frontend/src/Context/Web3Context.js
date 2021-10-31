@@ -3,6 +3,8 @@ import { web3Accounts, web3Enable, } from "@polkadot/extension-dapp"
 import { Provider, Signer } from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/rpc-provider';
 import FactoryAbi from '../abi/FactoryABI.json';
+import NftABI from '../abi/NftABI.json';
+
 import { ethers, Contract } from 'ethers';
 
 const Web3Context = createContext();
@@ -85,6 +87,39 @@ export const Web3Provider = (props) => {
         const receipt = await result.wait();
         console.log(receipt);
     }
+
+    //NFT functions
+    functionsToExport.mint = async (metadata,royaltyPercentage,contractAddress) => {
+        const nftContract = new Contract(contractAddress,NftABI,signer);
+        const result = await nftContract.mint(metaData,royaltyPercentage);
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    functionsToExport.tokenURI = async (tokenID) => {
+        const nftContract = new Contract(contractAddress,NftABI,signer);
+        const result = await nftContract.tokenURI(tokenID);
+        console.log(result);
+    }
+
+    functionsToExport.getTokenRoyalty = async (tokenID) => {
+        const nftContract = new Contract(contractAddress,NftABI,signer);
+        const result = await nftContract.getTokenRoyalty(tokenID);
+        console.log(result);
+    }
+
+    functionsToExport.totalSupply = async () => {
+        const nftContract = new Contract(contractAddress,NftABI,signer);
+        const result = await nftContract.totalSupply();
+        console.log(result);
+    }
+
+    functionsToExport.tokenOfOwnerByIndex = async (ownerAddress,index) => {
+        const nftContract = new Contract(contractAddress,NftABI,signer);
+        const result = await nftContract.tokenOfOwnerByIndex(ownerAddress,index);
+        console.log(result);
+    }
+    
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
     </Web3Context.Provider>)
