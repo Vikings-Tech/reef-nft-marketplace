@@ -60,6 +60,7 @@ export const Web3Provider = (props) => {
 
     };
 
+    //New address  0x53e507C95cC72F672e29a16e73D575BCB2272538
     functionsToExport.getCollectionCreationPrice = async () => {
         const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8", FactoryAbi, signer);
         console.log(factoryContract);
@@ -88,6 +89,18 @@ export const Web3Provider = (props) => {
         console.log(receipt);
     }
 
+    functionsToExport.totalCollections = async () =>{
+        const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8", FactoryAbi, signer);
+        const result = await factoryContract.totalCollections();
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    functionsToExport.getCollections = async (startIndex,endIndex) =>{
+        const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8", FactoryAbi, signer);
+        const result = await factoryContract.getCollectionsPaginated(startIndex,endIndex);
+        console.log(result);
+    }
     //NFT functions
     functionsToExport.mint = async (metadata,royaltyPercentage,contractAddress) => {
         const nftContract = new Contract(contractAddress,NftABI,signer);
@@ -119,7 +132,7 @@ export const Web3Provider = (props) => {
         const result = await nftContract.tokenOfOwnerByIndex(ownerAddress,index);
         console.log(result);
     }
-    
+
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
     </Web3Context.Provider>)
