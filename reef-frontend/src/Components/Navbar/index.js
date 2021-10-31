@@ -1,10 +1,14 @@
+import { useContext } from "react";
+import Web3Context, { Web3Provider } from "../../Context/Web3Context";
 const Navbar = () => {
+    const { account, extensionSetup } = useContext(Web3Context);
     return (<nav
-        class="flex items-center justify-between flex-wrap bg-white py-4 lg:px-12 shadow border-solid border-t-2 border-blue-700">
+        class="flex items-center justify-between flex-wrap bg-white py-4 lg:px-12 shadow border-solid border-t-2 border-primary">
         <div class="flex justify-between lg:w-auto w-full lg:border-b-0 pl-6 pr-2 border-solid border-b-2 border-gray-300 pb-5 lg:pb-0">
-            <div class="flex items-center flex-shrink-0 text-gray-800 mr-16">
-                <span class="font-semibold text-xl tracking-tight">My Navbar</span>
+            <div class="flex items-center flex-shrink-0 text-gray-800 mr-4">
+                <span class="font-semibold text-xl tracking-tight">Reef Marketplace</span>
             </div>
+
             <div class="block lg:hidden ">
                 <button
                     id="nav"
@@ -16,25 +20,11 @@ const Navbar = () => {
             </div>
         </div>
 
-        <div class="menu w-full lg:block flex-grow lg:flex lg:items-center lg:w-auto lg:px-3 px-8">
-            <div class="text-md font-bold text-blue-700 lg:flex-grow">
-                <a href="#responsive-header"
-                    class="block mt-4 lg:inline-block lg:mt-0 hover:text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
-                    Menu 1
-                </a>
-                <a href="#responsive-header"
-                    class=" block mt-4 lg:inline-block lg:mt-0 hover:text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
-                    Menu 2
-                </a>
-                <a href="#responsive-header"
-                    class="block mt-4 lg:inline-block lg:mt-0 hover:text-white px-4 py-2 rounded hover:bg-blue-700 mr-2">
-                    Menu 3
-                </a>
-            </div>
-            <div class="relative mx-auto text-gray-600 lg:block hidden">
+        <div class="menu flex-grow lg:flex justify-around lg:items-center lg:w-auto lg:px-8 px-8">
+            <div class="relative mx-auto flex-grow text-gray-600 lg:block hidden">
                 <input
-                    class="border-2 border-gray-300 bg-white h-10 pl-2 pr-8 rounded-lg text-sm focus:outline-none"
-                    type="search" name="search" placeholder="Search" />
+                    class="border-2 border-gray-300 bg-white w-full h-10 pl-2 pr-8 rounded-lg text-sm focus:outline-none"
+                    type="search" name="search" placeholder="Search Marketplace" />
                 <button type="submit" class="absolute right-0 top-0 mt-3 mr-2">
                     <svg class="text-gray-600 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
                         version="1.1" id="Capa_1" x="0px" y="0px"
@@ -46,14 +36,28 @@ const Navbar = () => {
                     </svg>
                 </button>
             </div>
-            <div class="flex ">
-                <a href="#"
-                    class="block text-md px-4 py-2 rounded text-blue-700 ml-2 font-bold hover:text-white mt-4 hover:bg-blue-700 lg:mt-0">Sign
-                    in</a>
 
-                <a href="#"
-                    class=" block text-md px-4  ml-2 py-2 rounded text-blue-700 font-bold hover:text-white mt-4 hover:bg-blue-700 lg:mt-0">login</a>
+
+        </div>
+        <div class="menu lg:flex lg:items-center  lg:px-3 px-8">
+            <div class="text-md font-bold items-center  text-blue-700 ">
+                <a href="#responsive-header"
+                    class="block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
+                    Explore
+                </a>
+                <a href="#responsive-header"
+                    class=" block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
+                    Create
+                </a>
+
             </div>
+
+
+            <button
+                onClick={() => { extensionSetup() }}
+                class="block text-md px-4 py-2 rounded text-white ml-2 font-bold hover:text-white mt-4 hover:bg-red-800 bg-primary lg:mt-0">{account ? account?.toString() : "Connect To Wallet"}</button>
+
+
         </div>
 
     </nav >);
