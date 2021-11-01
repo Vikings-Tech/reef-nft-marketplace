@@ -59,6 +59,8 @@ export const Web3Provider = (props) => {
     };
 
     functionsToExport.getCollectionCreationPrice = async () => {
+        console.log(FactoryAbi)
+        console.log(signer);
         const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8", FactoryAbi, signer);
         console.log(factoryContract);
         const result = await factoryContract.getPrice();
