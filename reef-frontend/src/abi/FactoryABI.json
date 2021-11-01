@@ -96,6 +96,52 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "startIndex",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "endIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "getCollectionsPaginated",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "contractAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "metaDataHash",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					}
+				],
+				"internalType": "struct CollectionFactory.collectionInfo[]",
+				"name": "",
+				"type": "tuple[]"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "getPrice",
 		"outputs": [
@@ -123,9 +169,14 @@
 						"internalType": "string",
 						"name": "metaDataHash",
 						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
 					}
 				],
-				"internalType": "struct CollectionFactory.contractInfo[]",
+				"internalType": "struct CollectionFactory.collectionInfo[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -171,6 +222,19 @@
 		"name": "setPrice",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalCollections",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
