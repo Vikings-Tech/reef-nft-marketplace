@@ -10,12 +10,34 @@ import {
   Link
 } from "react-router-dom";
 import CreateCollection from './Pages/CreateCollection';
+import { TRAlert } from 'tr-alerts';
+import UserCollections from './Pages/UserCollections';
+
 
 function App() {
   return (
     <>
-      <Navbar />
-      <Home />
+      <TRAlert />
+      <Web3Provider>
+
+        <Router>
+          <Navbar />
+
+          <Switch>
+            <Route path="/createCollection">
+              <CreateCollection />
+            </Route>
+            <Route path="/myCollections">
+              <UserCollections />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+
+
+        </Router>
+      </Web3Provider>
     </>
   );
 }

@@ -1,12 +1,13 @@
 import { useContext } from "react";
 import Web3Context, { Web3Provider } from "../../Context/Web3Context";
+import { Link } from "react-router-dom";
 const Navbar = () => {
     const { account, extensionSetup } = useContext(Web3Context);
     return (<nav
         class="flex items-center justify-between flex-wrap bg-white py-4 lg:px-12 shadow border-solid border-t-2 border-primary">
         <div class="flex justify-between lg:w-auto w-full lg:border-b-0 pl-6 pr-2 border-solid border-b-2 border-gray-300 pb-5 lg:pb-0">
             <div class="flex items-center flex-shrink-0 text-gray-800 mr-4">
-                <span class="font-semibold text-xl tracking-tight">Reef Marketplace</span>
+                <Link to="/" class="font-semibold text-xl tracking-tight">Reef Marketplace</Link>
             </div>
 
             <div class="block lg:hidden ">
@@ -41,14 +42,14 @@ const Navbar = () => {
         </div>
         <div class="menu lg:flex lg:items-center  lg:px-3 px-8">
             <div class="text-md font-bold items-center  text-blue-700 ">
-                <a href="#responsive-header"
+                <Link to="/myCollections"
                     class="block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
-                    Explore
-                </a>
-                <a href="#responsive-header"
+                    My Collections
+                </Link>
+                <Link to="/createCollection"
                     class=" block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
                     Create
-                </a>
+                </Link>
 
             </div>
 
