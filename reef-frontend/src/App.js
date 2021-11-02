@@ -30,6 +30,9 @@ function App() {
             <Route path="/myCollections">
               <UserCollections />
             </Route>
+            <Route path="/mint/:contractAddress">
+
+            </Route>
             <Route path="/">
               <Home />
             </Route>

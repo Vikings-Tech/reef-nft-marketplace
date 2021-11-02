@@ -146,23 +146,23 @@ export const Web3Provider = (props) => {
     //     console.log(result);
     // }
 
-    // functionsToExport.getTokenRoyalty = async (tokenID) => {
-    //     const nftContract = new Contract(contractAddress, NftABI, signer);
-    //     const result = await nftContract.getTokenRoyalty(tokenID);
-    //     console.log(result);
-    // }
+    functionsToExport.getTokenRoyalty = async (tokenID, contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.getTokenRoyalty(tokenID);
+        console.log(result);
+    }
 
-    // functionsToExport.totalSupply = async () => {
-    //     const nftContract = new Contract(contractAddress, NftABI, signer);
-    //     const result = await nftContract.totalSupply();
-    //     console.log(result);
-    // }
+    functionsToExport.totalSupply = async (contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.totalSupply();
+        console.log(result);
+    }
 
-    // functionsToExport.tokenOfOwnerByIndex = async (ownerAddress, index) => {
-    //     const nftContract = new Contract(contractAddress, NftABI, signer);
-    //     const result = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
-    //     console.log(result);
-    // }
+    functionsToExport.tokenOfOwnerByIndex = async (ownerAddress, index, contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
+        console.log(result);
+    }
 
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
