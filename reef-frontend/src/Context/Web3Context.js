@@ -157,6 +157,18 @@ export const Web3Provider = (props) => {
         console.log(result);
     }
 
+    functionsToExport.balanceOf = async (userAddress,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.balanceOf(userAddress);
+        console.log(result);
+    }
+
+    functionsToExport.tokenByIndex = async (contractAddress,index) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.tokenByIndex(index);
+        console.log(result);
+    }
+
     functionsToExport.tokenOfOwnerByIndex = async (ownerAddress, index, contractAddress) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
