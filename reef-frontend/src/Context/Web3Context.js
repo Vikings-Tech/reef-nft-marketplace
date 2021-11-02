@@ -175,6 +175,20 @@ export const Web3Provider = (props) => {
         console.log(result);
     }
 
+    functionsToExport.setApprovalForAll = async (operatorAddress, bool,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.setApprovalForAll(operatorAddress, bool);
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    functionsToExport.isApprovedForAll = async (userAddress,operatorAddress,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        //operator address is marketplace contract address
+        const result = await nftContract.isApprovedForAll(userAddress,operatorAddress);
+        console.log(result);
+    }
+
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
     </Web3Context.Provider>)
