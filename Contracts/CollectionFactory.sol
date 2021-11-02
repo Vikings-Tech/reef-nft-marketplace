@@ -20,8 +20,8 @@ contract CollectionFactory is Ownable{
         address creator;
     }
     
-    mapping(address=>collectionInfo[]) userToContracts;
-    
+    mapping(address=>uint[]) userToContracts;
+    mapping(address=>uint) contractToIndex;
     mapping(uint256=>collectionInfo) collectionByIndex;
     
     event CollectionCreated(address indexed creator,address indexed contractAddress,string indexed metaData);
@@ -52,18 +52,27 @@ contract CollectionFactory is Ownable{
                                                     metaData,
                                                     msg.sender
                                                     );
-        userToContracts[msg.sender].push(Info);
+        userToContracts[msg.sender].push(collectionId_.current());
         collectionByIndex[collectionId_.current()] = Info;
+        contractToIndex[address(NFTContract)] = collectionId_.current();
         emit CollectionCreated(msg.sender,address(NFTContract),metaData);
     }
     
-    function editMetaData(uint collectionId,string calldata newHash) external{
-        require(userToContracts[msg.sender].length <= collectionId);
-        userToContracts[msg.sender][collectionId].metaDataHash = newHash;
+    function editMetaData(address contractAddress,string calldata newHash) external{
+        require(contractToIndex[contractAddress] != 0,"Contract doesn't exist in scope of Factory");
+        collectionInfo storage Info = collectionByIndex[contractToIndex[contractAddress]];
+        require(Info.creator == msg.sender,"Only creator can edit metaData");
+        Info.metaDataHash = newHash;
     }
     
     function getUserCollections() external view returns(collectionInfo[] memory){
-        return userToContracts[msg.sender];
+        uint length = userToContracts[msg.sender].length;
+        collectionInfo[] memory Info = new collectionInfo[](length);
+        for (uint i=0;i<length;i++){
+            Info[i] = collectionByIndex[userToContracts[msg.sender][i]];
+        }
+        return Info;
+        
     }
     
     function totalCollections() external view returns(uint){
