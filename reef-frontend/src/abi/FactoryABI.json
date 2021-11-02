@@ -80,9 +80,9 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "collectionId",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "contractAddress",
+				"type": "address"
 			},
 			{
 				"internalType": "string",

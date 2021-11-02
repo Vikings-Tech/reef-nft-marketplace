@@ -113,18 +113,17 @@ export const Web3Provider = (props) => {
         return (result);
     }
 
-    functionsToExport.editMetaData = async (index, newMetaData) => {
+    functionsToExport.editMetaData = async (contractAddress, newMetaData) => {
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
-        const result = await factoryContract.editMetaData(index, newMetaData);
+        const result = await factoryContract.editMetaData(contractAddress, newMetaData);
         const receipt = await result.wait();
         console.log(receipt);
     }
 
     functionsToExport.totalCollections = async () => {
-        const factoryContract = new Contract("0x8715F6Cb518627180fD751d508cC19f3E11Acee8", FactoryAbi, signer);
+        const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.totalCollections();
-        const receipt = await result.wait();
-        console.log(receipt);
+        console.log(result);
     }
 
     functionsToExport.getCollections = async (startIndex, endIndex) => {
