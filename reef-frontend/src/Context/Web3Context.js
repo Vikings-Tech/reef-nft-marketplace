@@ -189,12 +189,38 @@ export const Web3Provider = (props) => {
         return result;
     }
 
+    functionsToExport.balanceOf = async (userAddress,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.balanceOf(userAddress);
+        console.log(result);
+    }
+
+    functionsToExport.tokenByIndex = async (contractAddress,index) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.tokenByIndex(index);
+        console.log(result);
+    }
+
     functionsToExport.tokenOfOwnerByIndex = async (ownerAddress, index, contractAddress) => {
         await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
         console.log(result);
         return result;
+    }
+
+    functionsToExport.setApprovalForAll = async (operatorAddress, bool,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.setApprovalForAll(operatorAddress, bool);
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    functionsToExport.isApprovedForAll = async (userAddress,operatorAddress,contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        //operator address is marketplace contract address
+        const result = await nftContract.isApprovedForAll(userAddress,operatorAddress);
+        console.log(result);
     }
 
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
