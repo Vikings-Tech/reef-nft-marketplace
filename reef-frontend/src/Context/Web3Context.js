@@ -4,6 +4,7 @@ import { Provider, Signer } from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/rpc-provider';
 import FactoryAbi from '../abi/FactoryABI.json';
 import NftABI from '../abi/NftABI.json';
+import MarketPlaceABI from '../abi/MarketPlaceABI.json';
 import { ethers, Contract } from 'ethers';
 import { factoryContractAddress } from "../config/contractAddress";
 import { useAlert } from 'tr-alerts';
@@ -220,6 +221,20 @@ export const Web3Provider = (props) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
         //operator address is marketplace contract address
         const result = await nftContract.isApprovedForAll(userAddress,operatorAddress);
+        console.log(result);
+    }
+
+    functionsToExport.createMarketItem = async (NFTContractAddress,tokenID,price) => {
+        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const result = await marketPlaceContract.createMarketItem(NFTContractAddress,tokenID,price);
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    //returns all unsold items as array of structs
+    functionsToExport.fetchMarketItems = async () => {
+        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const result = await marketPlaceContract.fetchMarketItems();
         console.log(result);
     }
 

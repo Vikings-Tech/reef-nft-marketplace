@@ -136,7 +136,7 @@ contract MarketPlace is ReentrancyGuard{
 
     MarketItem[] memory items = new MarketItem[](unsoldItemCount);
     for (uint i = 0; i < itemCount; i++) {
-      if (idToMarketItem[i + 1].owner == address(0)) {
+      if (!idToMarketItem[i + 1].sold) {
         uint currentId = i + 1;
         MarketItem storage currentItem = idToMarketItem[currentId];
         items[currentIndex] = currentItem;
@@ -198,6 +198,7 @@ contract MarketPlace is ReentrancyGuard{
         require(idToMarketItem[itemId].seller == msg.sender,"Sender is not lister");
         delete idToMarketItem[itemId];
         idToMarketItem[itemId].sold = true;
+        _itemsSold.increment();
         emit MarketItemUnlisted(
         itemId
         );
