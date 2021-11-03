@@ -61,6 +61,7 @@ contract MarketPlace is ReentrancyGuard{
     ) public payable nonReentrant {
     require(price > 0, "Price must be at least 1 wei");
     require(ERC165Checker.supportsInterface(nftContract,ERC721INTERFACE),"Contract needs to be ERC721");
+    require(IERC721(nftContract).ownerOf(tokenId) == msg.sender,"Only owner can create listing");
     _itemIds.increment();
     uint256 itemId = _itemIds.current();
     
