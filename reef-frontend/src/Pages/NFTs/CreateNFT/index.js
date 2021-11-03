@@ -8,8 +8,9 @@ import { create } from 'ipfs-http-client'
 import { pinFileToIPFS, pinJSONToIPFS, unPin } from "../../../config/axios";
 import { useParams } from "react-router";
 import { useAlert } from 'tr-alerts';
+import { TrashIcon } from "@heroicons/react/outline"
 
-
+const REQUIRED_ATTR_LIST = ["title", "description", "royalty"];
 const CreateNFT = () => {
     const { contractAddress } = useParams();
     const [cost, setCost] = useState();
@@ -19,10 +20,13 @@ const CreateNFT = () => {
     const { mint, getUserCollections } = useContext(Web3Context);
     const [metaData, setMetaData] = useState({ title: "", description: "", royalty: "" });
     const handleInputChange = (field, value) => {
+        console.log(metaData);
+        console.log(field);
+        console.log(value);
         const newMetaData = { ...metaData };
         switch (field) {
             case "royalty":
-                value.replace(/[^0-9]+/g, "");
+                value = value.replace(/[^0-9]+/g, "");
                 if (parseInt(value) > 20) {
                     showAlert('Alert!', "Royalty cannot exceed 20%", 'error', 1000);
                     value = "20"
@@ -43,15 +47,21 @@ const CreateNFT = () => {
         }
         else {
             const newMetaData = { ...metaData };
-            newMetaData[value] = "";
+            newMetaData[value] = ""
             setMetaData(newMetaData);
             setNewAttributeName("");
         }
 
     }
+    const handleDeleteAttribute = (attribute) => {
+
+
+        const newMetaData = { ...metaData };
+        delete newMetaData[attribute];
+        setMetaData(newMetaData);
+    }
     useEffect(() => {
         const getF = async () => {
-            setCost((await getCollectionCreationPrice()).toNumber());
         }
         getF();
     }, [])
@@ -60,7 +70,7 @@ const CreateNFT = () => {
         console.log(added);
         const { IpfsHash } = added.data;
         const finalHash = await pinJSONToIPFS({ ...metaData, image: IpfsHash });
-        const txn = await mint(metaData, 20,);
+        const txn = await mint(finalHash.data.IpfsHash, metaData.royalty, contractAddress);
         if (txn) {
             console.log(txn);
         }
@@ -88,12 +98,19 @@ const CreateNFT = () => {
                         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                             {Object.keys(metaData).map((attribute) => {
                                 if (typeof metaData[attribute] === "string") {
-                                    return (
+                                    return (<div className="flex items-center">
                                         <Text
                                             title={attribute}
                                             value={metaData[attribute]}
                                             onChange={(e) => handleInputChange(attribute, e.target.value)} />
+                                        {!REQUIRED_ATTR_LIST.includes(attribute) ? <TrashIcon onClick={() => handleDeleteAttribute(attribute)} className="cursor-pointer w-8 h-8" /> : <></>}
+
+                                    </div>
+
+
+
                                     );
+
                                 }
                             })}
 
@@ -132,7 +149,7 @@ const CreateNFT = () => {
                         </div>
                         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
                             <button onClick={createNFTFromData} class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Save({cost})
+                                Create NFT
                             </button>
                         </div>
                     </div>

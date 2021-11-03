@@ -1,0 +1,24 @@
+[debug] [2021-11-02T19:06:37.265Z] ----------------------------------------------------------------------
+[debug] [2021-11-02T19:06:37.267Z] Command:       /usr/local/bin/node /home/notanshuman/.local/npm/bin/firebase init
+[debug] [2021-11-02T19:06:37.268Z] CLI Version:   9.14.0
+[debug] [2021-11-02T19:06:37.268Z] Platform:      linux
+[debug] [2021-11-02T19:06:37.268Z] Node Version:  v14.18.1
+[debug] [2021-11-02T19:06:37.272Z] Time:          Wed Nov 03 2021 00:36:37 GMT+0530 (India Standard Time)
+[debug] [2021-11-02T19:06:37.272Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-11-02T19:06:37.275Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2021-11-02T19:06:37.297Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-11-02T19:06:37.297Z] > authorizing via signed-in user (anshumansingh64@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/notanshuman/projects/reef-nft-marketplace/reef-frontend
+
+[debug] [2021-11-02T19:06:38.124Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2021-11-02T19:06:38.124Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}

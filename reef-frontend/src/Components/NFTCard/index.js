@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getJSONfromHash } from "../../config/axios";
 
-const CollectionCard = ({ metaData, metaDataHash, collection }) => {
+const NFTCard = ({ metaData, metaDataHash, collection }) => {
     const [currentMetaData, setCurrentMetaData] = useState({});
     useEffect(() => {
         const fetchMetaData = async () => {
@@ -28,4 +28,4 @@ const CollectionCard = ({ metaData, metaDataHash, collection }) => {
         </div>
     </Link >);
 }
-export default CollectionCard
+export default NFTCard

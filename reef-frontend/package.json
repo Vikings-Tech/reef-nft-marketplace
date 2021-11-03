@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.0",
+    "@heroicons/react": "^1.0.5",
     "@pinata/sdk": "^1.1.23",
     "@polkadot/extension-dapp": "^0.40.3",
     "@polkadot/rpc-provider": "^6.5.2",

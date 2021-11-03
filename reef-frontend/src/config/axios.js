@@ -49,5 +49,5 @@ export const unPin = (hash) => {
     return instance.delete(url, getHeader());
 }
 export const getJSONfromHash = (hash) => {
-    return axios.get(`https://ipfs.infura.io/ipfs/${hash}`);
+    return axios.get(`https://infura-ipfs.io/${hash}`);
 }

@@ -4,7 +4,8 @@ const Text = ({ title, value, onChange }) => {
             {title}
         </label>
         <input
-            class="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-first-name" type="text" placeholder="Name of your Collection"
+            class="appearance-none block w-full bg-gray-100 text-gray-700 border border-gray-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-first-name" type="text"
+            placeholder={"Enter " + title}
             value={value}
             onChange={onChange}
         />

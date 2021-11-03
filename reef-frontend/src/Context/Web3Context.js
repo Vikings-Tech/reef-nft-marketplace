@@ -27,7 +27,7 @@ export const Web3Provider = (props) => {
         if (allInjected.length === 0) {
             showAlert('Alert!', 'No Wallet Extension Installed!', 'error', 2000)
             console.log('No extension installed!');
-            return;
+            return false;
         }
         let injected;
         if (allInjected[0] && allInjected[0].signer) {
@@ -65,9 +65,16 @@ export const Web3Provider = (props) => {
 
 
     };
+    const checkSigner = async () => {
+        if (!signer) {
+            await functionsToExport.extensionSetup();
+        }
+        return true;
+    }
 
     //New address  0x53e507C95cC72F672e29a16e73D575BCB2272538
     functionsToExport.getCollectionCreationPrice = async () => {
+        await checkSigner();
         console.log(FactoryAbi)
         console.log(signer);
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
@@ -78,6 +85,7 @@ export const Web3Provider = (props) => {
     }
     //Title,Description and Image
     functionsToExport.createCollection = async (name, symbol, metadata, creationValue) => {
+        await checkSigner();
         console.log(name, metadata, symbol, creationValue);
         console.log(metadata);
         console.log(symbol);
@@ -107,6 +115,7 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.getUserCollections = async () => {
+        await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.getUserCollections();
         console.log(result);
@@ -114,6 +123,7 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.editMetaData = async (contractAddress, newMetaData) => {
+        await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.editMetaData(contractAddress, newMetaData);
         const receipt = await result.wait();
@@ -121,46 +131,70 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.totalCollections = async () => {
+        await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.totalCollections();
         console.log(result);
     }
 
     functionsToExport.getCollections = async (startIndex, endIndex) => {
+        await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.getCollectionsPaginated(startIndex, endIndex);
         console.log(result);
     }
     //NFT functions
     functionsToExport.mint = async (metadata, royaltyPercentage, contractAddress) => {
+        await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
-        const result = await nftContract.mint(metadata, royaltyPercentage);
-        const receipt = await result.wait();
-        console.log(receipt);
+        let result, receipt;
+        try {
+            result = await nftContract.mint(metadata, royaltyPercentage);
+            console.log(result);
+        } catch (e) {
+            console.log(e);
+            return false
+        }
+        try {
+            receipt = await result.wait();
+            console.log(receipt);
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
+        return receipt
     }
 
-    // functionsToExport.tokenURI = async (tokenID) => {
-    //     const nftContract = new Contract(contractAddress, NftABI, signer);
-    //     const result = await nftContract.tokenURI(tokenID);
-    //     console.log(result);
-    // }
+    functionsToExport.tokenURI = async (tokenID, contractAddress) => {
+        const nftContract = new Contract(contractAddress, NftABI, signer);
+        const result = await nftContract.tokenURI(tokenID);
+        console.log(result);
+        return result;
+    }
 
     functionsToExport.getTokenRoyalty = async (tokenID, contractAddress) => {
+        await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.getTokenRoyalty(tokenID);
         console.log(result);
     }
 
     functionsToExport.totalSupply = async (contractAddress) => {
+        await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.totalSupply();
+
         console.log(result);
+        return result;
     }
 
     functionsToExport.tokenOfOwnerByIndex = async (ownerAddress, index, contractAddress) => {
+        await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.tokenOfOwnerByIndex(ownerAddress, index);
         console.log(result);
+        return result;
     }
 
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>

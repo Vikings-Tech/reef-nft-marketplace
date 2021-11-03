@@ -16,7 +16,7 @@ const UserCollections = () => {
             <div className="w-full text-3xl text-center">Your Collections</div>
             <div className="grid grid-cols-3 gap-4">
                 {allCollections.map((collection) => {
-                    return (<CollectionCard metaDataHash={collection.metaDataHash} />);
+                    return (<CollectionCard metaDataHash={collection.metaDataHash} collection={collection} />);
                 })}
             </div>
         </div>

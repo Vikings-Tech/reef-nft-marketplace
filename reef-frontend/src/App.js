@@ -12,6 +12,8 @@ import {
 import CreateCollection from './Pages/CreateCollection';
 import { TRAlert } from 'tr-alerts';
 import UserCollections from './Pages/UserCollections';
+import CollectionDetail from './Pages/CollectionDetail';
+import CreateNFT from './Pages/NFTs/CreateNFT';
 
 
 function App() {
@@ -30,9 +32,13 @@ function App() {
             <Route path="/myCollections">
               <UserCollections />
             </Route>
-            <Route path="/mint/:contractAddress">
-
+            <Route path="/:contractAddress/:metaDataHash/:ownerAddress/mint">
+              <CreateNFT />
             </Route>
+            <Route path="/:contractAddress/:metaDataHash/:ownerAddress">
+              <CollectionDetail />
+            </Route>
+
             <Route path="/">
               <Home />
             </Route>
