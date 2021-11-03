@@ -1,9 +1,44 @@
 import { MailIcon, PhoneIcon } from "@heroicons/react/outline"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
+import { useParams } from "react-router";
+import Text from "../../Components/Inputs/Text";
 import Web3Context from "../../Context/Web3Context"
+import { useAlert } from "tr-alerts";
 
 export default function DetailBanner({ metaData }) {
-    const { } = useContext(Web3Context);
+    const showAlert = useAlert();
+    const [isApproved, setIsApproved] = useState(false);
+    const [price, setPrice] = useState("1");
+    const [valid, setValid] = useState(true);
+
+    const { setApprovalForAll, isApprovedForAll, createMarketItem } = useContext(Web3Context);
+    const { metaDataHash, contractAddress, ownerAddress } = useParams();
+    const onClickApproval = async () => {
+        setIsApproved(await setApprovalForAll(true, contractAddress));
+    }
+    const onClickDisplayMarketPlace = async () => {
+        await createMarketItem()
+    }
+    const handlePriceChange = ({ target }) => {
+        let { value } = target;
+        value = value.replace(/[^0-9]\.+/g, "");
+        if (isNaN(parseFloat(value))) {
+            setValid(false);
+        }
+        else if (parseFloat(value) < 0.00001) {
+            value = "0.00001";
+            showAlert('Alert!', "Value cannot be lesser than 0.00001", 'error', 1000);
+        }
+        setPrice(value);
+
+    }
+    useEffect(() => {
+        const checkApproval = async () => {
+            setIsApproved(await isApprovedForAll(ownerAddress, contractAddress));
+        }
+        checkApproval();
+
+    }, [contractAddress])
 
     return (
         <div className=" mt-12 h-96 max-w-5xl mx-auto rounded-lg shadow-md">
@@ -18,20 +53,29 @@ export default function DetailBanner({ metaData }) {
                     </div>
 
                     <div className="mt-6 flex flex-col justify-stretch space-y-12 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        <button
+                        {!isApproved ? <button
+                            onClick={onClickApproval}
                             type="button"
                             className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                         >
                             <MailIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                             <span>Authorise</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                            <PhoneIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                            <span>Marketplace</span>
-                        </button>
+                        </button> : <div className="flex items-center">
+                            <Text
+                                onChange={handlePriceChange}
+                                value={price}
+                                title="Sale Price"
+                            />
+                            <button
+                                disabled={!valid}
+                                type="button"
+                                className=" mt-3 inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                            >
+                                <PhoneIcon className="-ml-1 mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <span>Marketplace</span>
+                            </button>
+                        </div>
+                        }
                     </div>
                 </div>
             </div>

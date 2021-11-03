@@ -9,7 +9,7 @@ import DetailBanner from './DetailBanner';
 
 const CollectionDetail = () => {
     console.log("HEre");
-    const { totalSupply, tokenOfOwnerByIndex, tokenURI } = useContext(Web3Context)
+    const { totalSupply, balanceOf, tokenOfOwnerByIndex, tokenURI } = useContext(Web3Context)
     const { metaDataHash, contractAddress, ownerAddress } = useParams();
     const [currentMetaData, setCurrentMetaData] = useState({});
     const [totalNFTs, setTotalNFTs] = useState(0);
@@ -20,7 +20,7 @@ const CollectionDetail = () => {
             //tokenOfOwnerBYinDex-> 0-9
             //tokenURI
             if (contractAddress) {
-                const response = parseInt((await totalSupply(contractAddress)).toString());
+                const response = parseInt((await balanceOf(ownerAddress, contractAddress)).toString());
                 setTotalNFTs(response);
                 console.log(response);
 
@@ -41,8 +41,8 @@ const CollectionDetail = () => {
     useEffect(() => {
         const fetchNFTData = async () => {
             let nfts = [];
-            for (var i = 1; i <= totalNFTs; i++) {
-                nfts.push(await tokenURI(i, contractAddress));
+            for (var i = 0; i < totalNFTs; i++) {
+                nfts.push(await tokenURI(parseInt((await tokenOfOwnerByIndex(ownerAddress, i, contractAddress)).toString()), contractAddress));
             }
             console.log(nfts.map(e => e.toString()));
             setNFTDetails(nfts);
