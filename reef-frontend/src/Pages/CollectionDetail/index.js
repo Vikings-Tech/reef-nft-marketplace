@@ -4,8 +4,11 @@ import CollectionCard from '../../Components/CollectionCard';
 import NFTCard from '../../Components/NFTCard';
 import { getJSONfromHash } from '../../config/axios';
 import Web3Context from '../../Context/Web3Context';
+import DetailBanner from './DetailBanner';
+
 
 const CollectionDetail = () => {
+    console.log("HEre");
     const { totalSupply, tokenOfOwnerByIndex, tokenURI } = useContext(Web3Context)
     const { metaDataHash, contractAddress, ownerAddress } = useParams();
     const [currentMetaData, setCurrentMetaData] = useState({});
@@ -47,23 +50,24 @@ const CollectionDetail = () => {
         fetchNFTData();
     }, [totalNFTs]);
     return (<div>
-        <div class="md:grid md:grid-cols-3 md:gap-6">
-            <CollectionCard metaData={currentMetaData} />
+        <div class="">
+            <DetailBanner metaData={currentMetaData} />
 
-            <div class="mt-5 md:mt-0 md:col-span-2">
-                <div className="flex justify-between items-center">
-                    <h1>Your NFTs</h1>
-                    <div class="px-4 py-3  text-right sm:px-6">
-                        <Link to={`/${contractAddress}/${metaDataHash}/${ownerAddress}/mint`} class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Create New NFT +
-                        </Link>
-                    </div>
+            <div class="">
+                <div className="flex my-8 justify-around items-center">
+                    <h1 className="text-5xl text-gray-700 font-bold text-center">Your NFTs</h1>
+
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="my-8 max-w-6xl mx-auto grid grid-cols-3 gap-4">
 
                     {NFTDetails.map(hash => {
                         return (<NFTCard metaDataHash={hash} />)
                     })}
+                </div>
+                <div class="px-4 py-3  text-center sm:px-6">
+                    <Link to={`/${contractAddress}/${metaDataHash}/${ownerAddress}/mint`} class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Create New NFT +
+                    </Link>
                 </div>
 
 
