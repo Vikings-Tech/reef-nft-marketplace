@@ -271,7 +271,21 @@ export const Web3Provider = (props) => {
         console.log(result);
     }
 
-    
+    functionsToExport.buyNFT() = async (NFTContractAddress,itemId,nftPrice) => {
+        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const result = await marketPlaceContract.createMarketSale(NFTContractAddress,itemId,{value: nftPrice});
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+    functionsToExport.unlistItem() = async (itemId) => {
+        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const result = await marketPlaceContract.unlistItem(itemId);
+        const receipt = await result.wait();
+        console.log(receipt);
+    }
+
+
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
     </Web3Context.Provider>)
