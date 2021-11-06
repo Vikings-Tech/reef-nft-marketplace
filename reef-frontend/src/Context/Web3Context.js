@@ -145,6 +145,7 @@ export const Web3Provider = (props) => {
         await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.totalCollections();
+        return result;
         console.log(result);
     }
 
@@ -152,6 +153,7 @@ export const Web3Provider = (props) => {
         await checkSigner();
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
         const result = await factoryContract.getCollectionsPaginated(startIndex, endIndex);
+        return result;
         console.log(result);
     }
     //NFT functions
@@ -236,13 +238,14 @@ export const Web3Provider = (props) => {
     functionsToExport.fetchItemsCreated = async () => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchItemsCreated();
-        console.log(result);
+        return result;
     }
 
     functionsToExport.fetchMyNFTs = async () => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchMyNFTs();
-        console.log(result);
+        return result;
+
     }
 
     functionsToExport.buyNFT = async (NFTContractAddress, itemId, nftPrice) => {
