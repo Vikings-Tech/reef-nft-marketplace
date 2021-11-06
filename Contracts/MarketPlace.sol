@@ -347,6 +347,7 @@ contract MarketPlace is ReentrancyGuard{
     }
 
     function unlistItem(uint itemId) external{
+        require(!idToMarketItem[itemId].sold,"Sold items can't be unlisted");
         require(idToMarketItem[itemId].seller == msg.sender,"Sender is not lister");
         delete idToMarketItem[itemId];
         idToMarketItem[itemId].sold = true;
