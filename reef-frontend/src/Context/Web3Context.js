@@ -258,6 +258,26 @@ export const Web3Provider = (props) => {
         return (await showTransactionProgress(marketPlaceContract.unlistItem(itemId)));
     }
 
+    functionsToExport.createMarketAuction = async (NFTContractAddress,tokenId,floorPrice,auctionDays) =>{
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        return (await showTransactionProgress(marketPlaceContract.createMarketAuction(NFTContractAddress, tokenId, floorPrice,auctionDays)));
+    }
+
+    functionsToExport.createAuctionBid = async (itemId,bidAmount) =>{
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        return (await showTransactionProgress(marketPlaceContract.createAuctionBid(itemId,{value:bidAmount})));
+    }
+
+    functionsToExport.createAuctionSale = async (NFTContractAddress,itemId) => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        return (await showTransactionProgress(marketPlaceContract.createAuctionSale(NFTContractAddress,itemId)));
+    }
+    //Only bids where user is highest bidder are visible through this
+    functionsToExport.fetchUserBids = async () => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        const result = await marketPlaceContract.fetchUserBids();
+        console.log(result);
+    }
 
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}
