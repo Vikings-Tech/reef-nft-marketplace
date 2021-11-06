@@ -6,11 +6,13 @@ import { uploadFile } from "../../config/pinata";
 import Web3Context, { Web3Provider } from "../../Context/Web3Context";
 import { create } from 'ipfs-http-client'
 import { pinFileToIPFS, pinJSONToIPFS, unPin } from "../../config/axios";
+import { useHistory } from "react-router";
 const fs = require('fs');
 
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const CreateCollection = () => {
+    const history = useHistory();
     const [cost, setCost] = useState()
 
     const { getCollectionCreationPrice, createCollection } = useContext(Web3Context);
@@ -41,6 +43,8 @@ const CreateCollection = () => {
         const txn = await createCollection(metaData.name, metaData.symbol, finalHash.data.IpfsHash, cost.toString());
         if (txn) {
             console.log(txn);
+            history.push("/myCollections")
+
         }
         else {
             unPin(IpfsHash);

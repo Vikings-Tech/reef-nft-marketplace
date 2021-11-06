@@ -84,7 +84,7 @@ export const Web3Provider = (props) => {
         }
         showAlert("Alert", `Transaction Sent! your hash is: ${completeResult.hash}`, "success", 6000);
         try {
-            receipt = await result.wait();
+            receipt = await completeResult.wait();
         }
         catch (e) {
             showAlert("Alert", `Transaction Failed! ${e.toString()}`, "danger", 2000);
@@ -121,26 +121,7 @@ export const Web3Provider = (props) => {
         console.log(symbol);
         console.log(creationValue);
         const factoryContract = new Contract(factoryContractAddress, FactoryAbi, signer);
-        let result, receipt;
-        try {
-            result = await factoryContract.createCollection(name, symbol, metadata, { value: creationValue });
-            console.log(result);
-        }
-        catch (e) {
-            showAlert('Alert!', e.toString(), 'danger', 2000)
-
-            return false;
-        }
-        try {
-            receipt = await result.wait();
-            showAlert('Success!', 'Collection Created!', 'success', 2000)
-
-            return receipt;
-        }
-        catch (e) {
-            console.log(e);
-            return false;
-        }
+        return (await showTransactionProgress(factoryContract.createCollection(name, symbol, metadata, { value: creationValue })));
 
     }
 
@@ -177,23 +158,7 @@ export const Web3Provider = (props) => {
     functionsToExport.mint = async (metadata, royaltyPercentage, contractAddress) => {
         await checkSigner();
         const nftContract = new Contract(contractAddress, NftABI, signer);
-        let result, receipt;
-        try {
-            result = await nftContract.mint(metadata, royaltyPercentage);
-            console.log(result);
-        } catch (e) {
-            console.log(e);
-            return false
-        }
-        try {
-            receipt = await result.wait();
-            console.log(receipt);
-        }
-        catch (e) {
-            console.log(e);
-            return false;
-        }
-        return receipt
+        return (await showTransactionProgress(nftContract.mint(metadata, royaltyPercentage)));
     }
 
     functionsToExport.tokenURI = async (tokenID, contractAddress) => {
@@ -242,27 +207,7 @@ export const Web3Provider = (props) => {
 
     functionsToExport.setApprovalForAll = async (bool, contractAddress) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
-        let result, receipt;
-        showAlert('Alert!', 'Transaction Initiated!', 'primary', 2000)
-
-        try {
-            result = await nftContract.setApprovalForAll(nftMarketplaceAddress, bool);
-            showAlert('Alert!', 'Waiting for Transaction', 'primary', 2000)
-
-        }
-        catch (e) {
-            showAlert('Alert!', e.toString(), 'danger', 2000);
-            return false;
-        }
-        try {
-            receipt = await result.wait();
-        }
-        catch (e) {
-            showAlert('Alert!', e.toString(), 'danger', 2000);
-            return false;
-        }
-        showAlert('Alert!', "Approved Successfully!", 'success', 2000);
-        return true;
+        return (await showTransactionProgress(nftContract.setApprovalForAll(nftMarketplaceAddress, bool)));
     }
 
     functionsToExport.isApprovedForAll = async (userAddress, contractAddress) => {
@@ -277,7 +222,7 @@ export const Web3Provider = (props) => {
         console.log("HERE")
         const etherPrice = utils.parseEther(price);
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        return showTransactionProgress(marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice));
+        return (await showTransactionProgress(marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice)));
     }
 
     //returns all unsold items as array of structs
@@ -302,24 +247,12 @@ export const Web3Provider = (props) => {
 
     functionsToExport.buyNFT = async (NFTContractAddress, itemId, nftPrice) => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        const result = await marketPlaceContract.createMarketSale(NFTContractAddress, itemId, { value: nftPrice });
-        const receipt = await result.wait();
-        console.log(receipt);
+        return (await showTransactionProgress(marketPlaceContract.createMarketSale(NFTContractAddress, itemId, { value: nftPrice })));
     }
 
     functionsToExport.unlistItem = async (itemId) => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        const result = await marketPlaceContract.unlistItem(itemId);
-        result.on("transactionHash", (hash) => {
-            console.log("Sent Successfully")
-            console.log(hash);
-        })
-        result.once("confirmation", (a, b) => {
-            console.log(a);
-            console.log(b);
-        })
-        const receipt = await result.wait();
-        console.log(receipt);
+        return (await showTransactionProgress(marketPlaceContract.unlistItem(itemId)));
     }
 
 
