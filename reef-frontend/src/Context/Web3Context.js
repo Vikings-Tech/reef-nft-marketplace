@@ -5,8 +5,8 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import FactoryAbi from '../abi/FactoryABI.json';
 import NftABI from '../abi/NftABI.json';
 import MarketPlaceABI from '../abi/MarketPlaceABI.json';
-import { ethers, Contract } from 'ethers';
-import { factoryContractAddress } from "../config/contractAddress";
+import { ethers, Contract, utils } from 'ethers';
+import { factoryContractAddress, nftMarketplaceAddress } from "../config/contractAddress";
 import { useAlert } from 'tr-alerts';
 
 
@@ -190,13 +190,14 @@ export const Web3Provider = (props) => {
         return result;
     }
 
-    functionsToExport.balanceOf = async (userAddress,contractAddress) => {
+    functionsToExport.balanceOf = async (userAddress, contractAddress) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.balanceOf(userAddress);
+        return result;
         console.log(result);
     }
 
-    functionsToExport.tokenByIndex = async (contractAddress,index) => {
+    functionsToExport.tokenByIndex = async (contractAddress, index) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
         const result = await nftContract.tokenByIndex(index);
         console.log(result);
@@ -210,55 +211,77 @@ export const Web3Provider = (props) => {
         return result;
     }
 
-    functionsToExport.setApprovalForAll = async (operatorAddress, bool,contractAddress) => {
+    functionsToExport.setApprovalForAll = async (bool, contractAddress) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
-        const result = await nftContract.setApprovalForAll(operatorAddress, bool);
-        const receipt = await result.wait();
-        console.log(receipt);
+        let result, receipt;
+        showAlert('Alert!', 'Transaction Initiated!', 'primary', 2000)
+
+        try {
+            result = await nftContract.setApprovalForAll(nftMarketplaceAddress, bool);
+            showAlert('Alert!', 'Waiting for Transaction', 'primary', 2000)
+
+        }
+        catch (e) {
+            showAlert('Alert!', e.toString(), 'error', 2000);
+            return false;
+        }
+        try {
+            receipt = await result.wait();
+        }
+        catch (e) {
+            showAlert('Alert!', e.toString(), 'error', 2000);
+            return false;
+        }
+        showAlert('Alert!', "Approved Successfully!", 'success', 2000);
+        return true;
     }
 
-    functionsToExport.isApprovedForAll = async (userAddress,operatorAddress,contractAddress) => {
+    functionsToExport.isApprovedForAll = async (userAddress, contractAddress) => {
         const nftContract = new Contract(contractAddress, NftABI, signer);
         //operator address is marketplace contract address
-        const result = await nftContract.isApprovedForAll(userAddress,operatorAddress);
+        const result = await nftContract.isApprovedForAll(userAddress, nftMarketplaceAddress);
         console.log(result);
+        return result;
     }
 
-    functionsToExport.createMarketItem = async (NFTContractAddress,tokenID,price) => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
-        const result = await marketPlaceContract.createMarketItem(NFTContractAddress,tokenID,price);
+    functionsToExport.createMarketItem = async (NFTContractAddress, tokenID, price) => {
+        console.log("HERE")
+        const etherPrice = utils.parseEther(price);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        const result = await marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice);
         const receipt = await result.wait();
         console.log(receipt);
     }
 
     //returns all unsold items as array of structs
     functionsToExport.fetchMarketItems = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchMarketItems();
         console.log(result);
+        return result;
     }
 
     functionsToExport.fetchItemsCreated = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchItemsCreated();
         console.log(result);
     }
 
-    functionsToExport.fetchMyNFTs() = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+    functionsToExport.fetchMyNFTs = async () => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchMyNFTs();
         console.log(result);
     }
 
-    functionsToExport.buyNFT() = async (NFTContractAddress,itemId,nftPrice) => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
-        const result = await marketPlaceContract.createMarketSale(NFTContractAddress,itemId,{value: nftPrice});
+    functionsToExport.buyNFT = async (NFTContractAddress, itemId, nftPrice) => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        const result = await marketPlaceContract.createMarketSale(NFTContractAddress, itemId, { value: nftPrice });
         const receipt = await result.wait();
         console.log(receipt);
     }
 
-    functionsToExport.unlistItem() = async (itemId) => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+    functionsToExport.unlistItem = async (itemId) => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.unlistItem(itemId);
         const receipt = await result.wait();
         console.log(receipt);

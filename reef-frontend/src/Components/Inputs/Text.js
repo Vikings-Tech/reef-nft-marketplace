@@ -1,4 +1,4 @@
-const Text = ({ title, value, onChange }) => {
+const Text = ({ title, value, onChange, ...props }) => {
     return (<div class="w-full  px-3 mb-6 md:mb-0">
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
             {title}
@@ -8,6 +8,7 @@ const Text = ({ title, value, onChange }) => {
             placeholder={"Enter " + title}
             value={value}
             onChange={onChange}
+            {...props}
         />
     </div>)
 }
