@@ -10,7 +10,7 @@ import { useParams } from "react-router";
 import { useAlert } from 'tr-alerts';
 import { TrashIcon } from "@heroicons/react/outline"
 
-const REQUIRED_ATTR_LIST = ["title", "description", "royalty"];
+const REQUIRED_ATTR_LIST = ["title", "description", "royalty", "image"];
 const NFTDetail = ({ contractAddress, tokenId, metaData, ownerAddress, isApproved }) => {
     const [newAttributeName, setNewAttributeName] = useState("")
     const showAlert = useAlert();
@@ -61,6 +61,9 @@ const NFTDetail = ({ contractAddress, tokenId, metaData, ownerAddress, isApprove
                     <div class="shadow sm:rounded-md sm:overflow-hidden">
                         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                             {Object.keys(metaData).map((attribute) => {
+                                if (REQUIRED_ATTR_LIST.includes(attribute)) {
+                                    return (<></>)
+                                }
                                 if (typeof metaData[attribute] === "string") {
                                     return (<div className="flex items-center">
                                         <Text
