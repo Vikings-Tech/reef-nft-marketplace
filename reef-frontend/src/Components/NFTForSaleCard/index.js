@@ -1,9 +1,21 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getJSONfromHash } from "../../config/axios";
+import Web3Context from "../../Context/Web3Context";
 
-const NFTCard = ({ metaData, metaDataHash, sale }) => {
+const NFTForSaleCard = ({ metaData = {}, tokenId, nftContract, price, royalty }) => {
+    const { tokenURI } = useContext(Web3Context);
     const [currentMetaData, setCurrentMetaData] = useState({});
+    useEffect(() => {
+        const fetchMetaData = async () => {
+            const nftData = {}
+            nftData["tokenURI"] = await tokenURI(tokenId, nftContract);
+            nftData["metaData"] = (await getJSONfromHash(nftData.tokenURI)).data;
+            setCurrentMetaData(nftData.metaData);
+        }
+        fetchMetaData();
+
+    }, [tokenId]);
 
     return (<div class="w-96  bg-white rounded-lg shadow-lg overflow-hidden flex flex-col ">
         <div>
@@ -12,7 +24,9 @@ const NFTCard = ({ metaData, metaDataHash, sale }) => {
         <div class="h-32 text-center py-8 sm:py-6">
             <p class="text-xl text-gray-700 font-bold mb-2">{currentMetaData?.title || metaData?.title}</p>
             <p class="text-base text-gray-400 font-normal">{currentMetaData?.subtitle || metaData?.subtitle}</p>
+            <p class="text-base text-gray-400 font-normal">{price.toString()}</p>
+            <p class="text-base text-gray-400 font-normal">{royalty?.toString()}</p>
         </div>
     </div >);
 }
-export default NFTCard
+export default NFTForSaleCard

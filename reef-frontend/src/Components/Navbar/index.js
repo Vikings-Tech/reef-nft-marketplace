@@ -46,9 +46,9 @@ const Navbar = () => {
                     class="block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
                     My Collections
                 </Link>
-                <Link to="/createCollection"
+                <Link to="/explore"
                     class=" block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
-                    Create
+                    Explore
                 </Link>
 
             </div>
@@ -56,7 +56,7 @@ const Navbar = () => {
 
             <button
                 onClick={() => { extensionSetup() }}
-                class="block text-md px-4 py-2 rounded text-white ml-2 font-bold hover:text-white mt-4 hover:bg-red-800 bg-primary lg:mt-0">{account ? account?.toString() : "Connect To Wallet"}</button>
+                class="block w-48 truncate text-md px-4 py-2 rounded text-white ml-2 font-bold hover:text-white mt-4 hover:bg-red-800 bg-primary lg:mt-0">{account ? account?.toString() : "Connect To Wallet"}</button>
 
 
         </div>

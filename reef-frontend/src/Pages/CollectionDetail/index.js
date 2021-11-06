@@ -4,29 +4,35 @@ import CollectionCard from '../../Components/CollectionCard';
 import NFTCard from '../../Components/NFTCard';
 import { getJSONfromHash } from '../../config/axios';
 import Web3Context from '../../Context/Web3Context';
+import NFTDetail from '../NFTs/NFTDetail';
 import DetailBanner from './DetailBanner';
 
 
 const CollectionDetail = () => {
     console.log("HEre");
-    const { totalSupply, balanceOf, tokenOfOwnerByIndex, tokenURI } = useContext(Web3Context)
+    const { totalSupply, balanceOf, tokenOfOwnerByIndex, tokenURI, isApprovedForAll } = useContext(Web3Context)
     const { metaDataHash, contractAddress, ownerAddress } = useParams();
     const [currentMetaData, setCurrentMetaData] = useState({});
     const [totalNFTs, setTotalNFTs] = useState(0);
     const [NFTDetails, setNFTDetails] = useState([])
+    const [selectedNFT, setSelectedNFT] = useState();
+    const [isApproved, setIsApproved] = useState(false);
+
     useEffect(() => {
         const fetchNFTs = async () => {
-            //BalancOf->10
-            //tokenOfOwnerBYinDex-> 0-9
-            //tokenURI
-            if (contractAddress) {
-                const response = parseInt((await balanceOf(ownerAddress, contractAddress)).toString());
-                setTotalNFTs(response);
-                console.log(response);
+            const response = parseInt((await balanceOf(ownerAddress, contractAddress)).toString());
+            setTotalNFTs(response);
+            console.log(response);
 
-            }
+
         }
-        fetchNFTs();
+        const checkApproval = async () => {
+            setIsApproved(await isApprovedForAll(ownerAddress, contractAddress));
+        }
+        if (contractAddress) {
+            checkApproval();
+            fetchNFTs();
+        }
     }, [contractAddress])
     useEffect(() => {
         const fetchMetaData = async () => {
@@ -42,26 +48,39 @@ const CollectionDetail = () => {
         const fetchNFTData = async () => {
             let nfts = [];
             for (var i = 0; i < totalNFTs; i++) {
-                nfts.push(await tokenURI(parseInt((await tokenOfOwnerByIndex(ownerAddress, i, contractAddress)).toString()), contractAddress));
+                const nftData = {
+                    ownerAddress: ownerAddress,
+                    contractAddress: contractAddress,
+                    tokenId: parseInt((await tokenOfOwnerByIndex(ownerAddress, i, contractAddress)).toString()),
+                }
+                nftData["tokenURI"] = await tokenURI(nftData.tokenId, contractAddress);
+                nftData["metaData"] = (await getJSONfromHash(nftData.tokenURI)).data;
+                nfts.push(nftData);
             }
             console.log(nfts.map(e => e.toString()));
             setNFTDetails(nfts);
         }
+
         fetchNFTData();
     }, [totalNFTs]);
+    useEffect(() => {
+
+
+    }, [contractAddress])
     return (<div>
         <div class="">
-            <DetailBanner metaData={currentMetaData} />
+            <DetailBanner metaData={currentMetaData} isApproved={isApproved} setIsApproved={setIsApproved} />
 
             <div class="">
                 <div className="flex my-8 justify-around items-center">
                     <h1 className="text-5xl text-gray-700 font-bold text-center">Your NFTs</h1>
 
                 </div>
+                {selectedNFT ? <NFTDetail {...selectedNFT} isApproved={isApproved} /> : <></>}
                 <div className="my-8 max-w-6xl mx-auto grid grid-cols-3 gap-4">
 
-                    {NFTDetails.map(hash => {
-                        return (<NFTCard metaDataHash={hash} />)
+                    {NFTDetails.map(nftData => {
+                        return (<div onClick={() => setSelectedNFT(nftData)}><NFTCard {...nftData} /></div>)
                     })}
                 </div>
                 <div class="px-4 py-3  text-center sm:px-6">

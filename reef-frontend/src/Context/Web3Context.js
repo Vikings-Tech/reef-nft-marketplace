@@ -245,8 +245,9 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.createMarketItem = async (NFTContractAddress, tokenID, price) => {
+        console.log("HERE")
         const etherPrice = utils.parseEther(price);
-        const marketPlaceContract = new Contract("MarketPlace Contract Add", MarketPlaceABI, signer);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice);
         const receipt = await result.wait();
         console.log(receipt);
@@ -254,32 +255,33 @@ export const Web3Provider = (props) => {
 
     //returns all unsold items as array of structs
     functionsToExport.fetchMarketItems = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add", MarketPlaceABI, signer);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchMarketItems();
         console.log(result);
+        return result;
     }
 
     functionsToExport.fetchItemsCreated = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchItemsCreated();
         console.log(result);
     }
 
-    functionsToExport.fetchMyNFTs() = async () => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+    functionsToExport.fetchMyNFTs = async () => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.fetchMyNFTs();
         console.log(result);
     }
 
-    functionsToExport.buyNFT() = async (NFTContractAddress,itemId,nftPrice) => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
-        const result = await marketPlaceContract.createMarketSale(NFTContractAddress,itemId,{value: nftPrice});
+    functionsToExport.buyNFT = async (NFTContractAddress, itemId, nftPrice) => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        const result = await marketPlaceContract.createMarketSale(NFTContractAddress, itemId, { value: nftPrice });
         const receipt = await result.wait();
         console.log(receipt);
     }
 
-    functionsToExport.unlistItem() = async (itemId) => {
-        const marketPlaceContract = new Contract("MarketPlace Contract Add",MarketPlaceABI,signer);
+    functionsToExport.unlistItem = async (itemId) => {
+        const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.unlistItem(itemId);
         const receipt = await result.wait();
         console.log(receipt);

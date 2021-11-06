@@ -14,6 +14,7 @@ import { TRAlert } from 'tr-alerts';
 import UserCollections from './Pages/UserCollections';
 import CollectionDetail from './Pages/CollectionDetail';
 import CreateNFT from './Pages/NFTs/CreateNFT';
+import ExploreCollections from './Pages/ExploreCollections';
 
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
             </Route>
             <Route path="/:contractAddress/:metaDataHash/:ownerAddress">
               <CollectionDetail />
+            </Route>
+            <Route path="/explore">
+              <ExploreCollections />
             </Route>
 
             <Route path="/">
