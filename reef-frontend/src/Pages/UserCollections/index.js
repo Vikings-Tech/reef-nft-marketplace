@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router";
 import CollectionCard from "../../Components/CollectionCard";
+import EmptySection from "../../Components/EmptySection";
 import Spinner from "../../Components/Loader/Spinner";
 import { getJSONfromHash } from "../../config/axios";
 import Web3Context from "../../Context/Web3Context";
@@ -7,6 +9,7 @@ import Web3Context from "../../Context/Web3Context";
 
 
 const UserCollections = () => {
+    const history = useHistory()
     const { getUserCollections } = useContext(Web3Context);
     const [allCollections, setAllCollections] = useState(undefined);
     useEffect(() => {
@@ -21,13 +24,16 @@ const UserCollections = () => {
             })}
         </div>);
     }
+    const onClickCreateCollection = () => {
+        history.push("/createCollection")
+    }
 
     return (<>
-        <div className="container mx-auto px-2 lg:px-4 mt-4">
-            <div className="w-full text-3xl text-center">Your Collections</div>
+        <div className="container mx-auto  lg:px-8 mt-4">
+            <div className="w-full my-16 text-5xl font-semibold text-center">Your Collections</div>
             {!allCollections ? <Spinner /> :
                 allCollections?.length === 0 ?
-                    <ListOfCollections /> :
+                    <EmptySection item="collection" onClick={onClickCreateCollection} /> :
                     <ListOfCollections />}
 
         </div>

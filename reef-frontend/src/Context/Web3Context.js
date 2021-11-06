@@ -26,7 +26,7 @@ export const Web3Provider = (props) => {
         let allInjected = await web3Enable('Reef Marketplace');
 
         if (allInjected.length === 0) {
-            showAlert('Alert!', 'No Wallet Extension Installed!', 'error', 2000)
+            showAlert('Alert!', 'No Wallet Extension Installed!', 'danger', 2000)
             console.log('No extension installed!');
             return false;
         }
@@ -72,6 +72,35 @@ export const Web3Provider = (props) => {
         }
         return true;
     }
+    const showTransactionProgress = async (result) => {
+        showAlert('Alert!', 'Transaction Initiated!', 'primary', 2000)
+        let completeResult, receipt;
+        try {
+            completeResult = await Promise.resolve(result);
+        }
+        catch (e) {
+            showAlert("Alert", `Transaction Failed! ${e.toString()}`, "danger", 2000);
+            return false;
+        }
+        showAlert("Alert", `Transaction Sent! your hash is: ${completeResult.hash}`, "success", 6000);
+        try {
+            receipt = await result.wait();
+        }
+        catch (e) {
+            showAlert("Alert", `Transaction Failed! ${e.toString()}`, "danger", 2000);
+            return false;
+        }
+
+        if (receipt.status === 1) {
+            showAlert("Alert", `Transaction Success!`, "success", 2000);
+
+        }
+        else {
+            showAlert("Alert", `Transaction Failed!`, "danger", 2000);
+        }
+        return receipt;
+
+    }
 
     //New address  0x53e507C95cC72F672e29a16e73D575BCB2272538
     functionsToExport.getCollectionCreationPrice = async () => {
@@ -98,7 +127,7 @@ export const Web3Provider = (props) => {
             console.log(result);
         }
         catch (e) {
-            showAlert('Alert!', e.toString(), 'error', 2000)
+            showAlert('Alert!', e.toString(), 'danger', 2000)
 
             return false;
         }
@@ -222,14 +251,14 @@ export const Web3Provider = (props) => {
 
         }
         catch (e) {
-            showAlert('Alert!', e.toString(), 'error', 2000);
+            showAlert('Alert!', e.toString(), 'danger', 2000);
             return false;
         }
         try {
             receipt = await result.wait();
         }
         catch (e) {
-            showAlert('Alert!', e.toString(), 'error', 2000);
+            showAlert('Alert!', e.toString(), 'danger', 2000);
             return false;
         }
         showAlert('Alert!', "Approved Successfully!", 'success', 2000);
@@ -248,9 +277,7 @@ export const Web3Provider = (props) => {
         console.log("HERE")
         const etherPrice = utils.parseEther(price);
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        const result = await marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice);
-        const receipt = await result.wait();
-        console.log(receipt);
+        return showTransactionProgress(marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice));
     }
 
     //returns all unsold items as array of structs
@@ -283,6 +310,14 @@ export const Web3Provider = (props) => {
     functionsToExport.unlistItem = async (itemId) => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         const result = await marketPlaceContract.unlistItem(itemId);
+        result.on("transactionHash", (hash) => {
+            console.log("Sent Successfully")
+            console.log(hash);
+        })
+        result.once("confirmation", (a, b) => {
+            console.log(a);
+            console.log(b);
+        })
         const receipt = await result.wait();
         console.log(receipt);
     }
