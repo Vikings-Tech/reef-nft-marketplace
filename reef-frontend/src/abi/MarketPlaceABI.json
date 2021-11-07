@@ -362,6 +362,28 @@
 				"internalType": "struct MarketPlace.MarketItem[]",
 				"name": "",
 				"type": "tuple[]"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "highestBid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "highestBidder",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timeEnding",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct MarketPlace.AuctionInfo[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
