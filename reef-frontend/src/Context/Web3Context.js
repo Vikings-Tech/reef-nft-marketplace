@@ -221,7 +221,6 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.createMarketItem = async (NFTContractAddress, tokenID, price) => {
-        console.log("HERE")
         const etherPrice = utils.parseEther(price);
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         return (await showTransactionProgress(marketPlaceContract.createMarketItem(NFTContractAddress, tokenID, etherPrice)));
@@ -249,6 +248,7 @@ export const Web3Provider = (props) => {
     }
 
     functionsToExport.buyNFT = async (NFTContractAddress, itemId, nftPrice) => {
+
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
         return (await showTransactionProgress(marketPlaceContract.createMarketSale(NFTContractAddress, itemId, { value: nftPrice })));
     }
@@ -258,19 +258,22 @@ export const Web3Provider = (props) => {
         return (await showTransactionProgress(marketPlaceContract.unlistItem(itemId)));
     }
 
-    functionsToExport.createMarketAuction = async (NFTContractAddress,tokenId,floorPrice,auctionDays) =>{
+    functionsToExport.createMarketAuction = async (NFTContractAddress, tokenId, floorPrice, auctionDays) => {
+        const etherPrice = utils.parseEther(floorPrice);
+
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        return (await showTransactionProgress(marketPlaceContract.createMarketAuction(NFTContractAddress, tokenId, floorPrice,auctionDays)));
+        return (await showTransactionProgress(marketPlaceContract.createMarketAuction(NFTContractAddress, tokenId, etherPrice, auctionDays)));
     }
 
-    functionsToExport.createAuctionBid = async (itemId,bidAmount) =>{
+    functionsToExport.createAuctionBid = async (itemId, bidAmount) => {
+        const etherPrice = utils.parseEther(bidAmount);
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        return (await showTransactionProgress(marketPlaceContract.createAuctionBid(itemId,{value:bidAmount})));
+        return (await showTransactionProgress(marketPlaceContract.createAuctionBid(itemId, { value: etherPrice })));
     }
 
-    functionsToExport.createAuctionSale = async (NFTContractAddress,itemId) => {
+    functionsToExport.createAuctionSale = async (NFTContractAddress, itemId) => {
         const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
-        return (await showTransactionProgress(marketPlaceContract.createAuctionSale(NFTContractAddress,itemId)));
+        return (await showTransactionProgress(marketPlaceContract.createAuctionSale(NFTContractAddress, itemId)));
     }
     //Only bids where user is highest bidder are visible through this
     functionsToExport.fetchUserBids = async () => {

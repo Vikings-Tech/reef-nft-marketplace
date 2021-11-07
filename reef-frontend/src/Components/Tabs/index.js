@@ -2,7 +2,6 @@ import React from "react";
 import './style.css'
 
 const Tabs = ({ color, tabs = [], children, ...props }) => {
-    console.log(children)
     const [openTab, setOpenTab] = React.useState(0);
 
     return (

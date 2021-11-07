@@ -9,6 +9,7 @@ import { pinFileToIPFS, pinJSONToIPFS, unPin } from "../../../config/axios";
 import { useParams } from "react-router";
 import { useAlert } from 'tr-alerts';
 import { TrashIcon } from "@heroicons/react/outline"
+import NFTPreview from "./NFTPreview";
 
 const REQUIRED_ATTR_LIST = ["title", "description", "royalty"];
 const CreateNFT = () => {
@@ -90,7 +91,7 @@ const CreateNFT = () => {
     }
     return (<div>
         <div class="md:grid md:grid-cols-3 md:gap-6">
-            <CollectionCard metaData={metaData} />
+            <NFTPreview {...metaData} />
 
             <div class="mt-5 md:mt-0 md:col-span-2">
                 <form onSubmit={e => e.preventDefault() && createNFTFromData()}>

@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import CollectionCard from '../../Components/CollectionCard';
+import EmptySection from '../../Components/EmptySection';
+import Spinner from '../../Components/Loader/Spinner';
 import NFTCard from '../../Components/NFTCard';
 import { getJSONfromHash } from '../../config/axios';
 import Web3Context from '../../Context/Web3Context';
@@ -10,11 +12,12 @@ import DetailBanner from './DetailBanner';
 
 const CollectionDetail = () => {
     console.log("HEre");
+    const history = useHistory();
     const { totalSupply, balanceOf, tokenOfOwnerByIndex, tokenURI, isApprovedForAll } = useContext(Web3Context)
     const { metaDataHash, contractAddress, ownerAddress } = useParams();
     const [currentMetaData, setCurrentMetaData] = useState({});
-    const [totalNFTs, setTotalNFTs] = useState(0);
-    const [NFTDetails, setNFTDetails] = useState([])
+    const [totalNFTs, setTotalNFTs] = useState(-1);
+    const [NFTDetails, setNFTDetails] = useState(undefined)
     const [selectedNFT, setSelectedNFT] = useState();
     const [isApproved, setIsApproved] = useState(false);
 
@@ -46,6 +49,9 @@ const CollectionDetail = () => {
     }, [metaDataHash]);
     useEffect(() => {
         const fetchNFTData = async () => {
+            if (totalNFTs < 0) {
+                return;
+            }
             let nfts = [];
             for (var i = 0; i < totalNFTs; i++) {
                 const nftData = {
@@ -77,17 +83,22 @@ const CollectionDetail = () => {
 
                 </div>
                 {selectedNFT ? <NFTDetail {...selectedNFT} isApproved={isApproved} /> : <></>}
-                <div className="my-8 max-w-6xl mx-auto grid grid-cols-3 gap-4">
 
-                    {NFTDetails.map(nftData => {
-                        return (<div onClick={() => setSelectedNFT(nftData)}><NFTCard {...nftData} /></div>)
-                    })}
-                </div>
-                <div class="px-4 py-3  text-center sm:px-6">
-                    <Link to={`/${contractAddress}/${metaDataHash}/${ownerAddress}/mint`} class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Create New NFT +
-                    </Link>
-                </div>
+
+                {NFTDetails === undefined ?
+                    <Spinner /> :
+                    NFTDetails.length <= 0 ?
+                        <EmptySection item="NFT" onClick={() => history.push(`/${contractAddress}/${metaDataHash}/${ownerAddress}/mint`)} /> :
+                        <>    <div className="my-8 max-w-6xl mx-auto grid grid-cols-3 gap-4">{NFTDetails.map(nftData => {
+                            return (<div onClick={() => setSelectedNFT(nftData)}><NFTCard {...nftData} /></div>)
+                        })}</div>
+                            <div class="px-4 py-3  text-center sm:px-6">
+                                <Link to={`/${contractAddress}/${metaDataHash}/${ownerAddress}/mint`} class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Create New NFT +
+                                </Link>
+                            </div></>}
+
+
 
 
             </div>
