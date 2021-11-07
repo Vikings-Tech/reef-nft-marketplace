@@ -358,6 +358,7 @@ contract MarketPlace is ReentrancyGuard{
             }
             delete auctionData[itemId];
         }
+        IERC721(idToMarketItem[itemId].nftContract).transferFrom(address(this),msg.sender,idToMarketItem[itemId].tokenId);
         delete idToMarketItem[itemId];
         idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
