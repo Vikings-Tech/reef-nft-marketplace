@@ -173,7 +173,7 @@ contract MarketPlace is ReentrancyGuard{
     
     auctionData[itemId] = AuctionInfo(0,
                                       address(0),
-                                      auctionDays*1 days
+                                      (block.timestamp + auctionDays*1 days)
                                      );
     
     emit MarketItemCreated(
