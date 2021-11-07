@@ -277,25 +277,27 @@ contract MarketPlace is ReentrancyGuard{
       }
     }
     return (items,info);
-    
   }
 
   /* Returns all unsold market items */
-  function fetchMarketItems() public view returns (MarketItem[] memory) {
+  function fetchMarketItems() public view returns (MarketItem[] memory,AuctionInfo[] memory) {
     uint itemCount = _itemIds.current();
     uint unsoldItemCount = _itemIds.current() - _itemsSold.current();
     uint currentIndex = 0;
 
     MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+    AuctionInfo[] memory info = new AuctionInfo[](unsoldItemCount);
     for (uint i = 0; i < itemCount; i++) {
       if (!idToMarketItem[i + 1].sold) {
         uint currentId = i + 1;
         MarketItem storage currentItem = idToMarketItem[currentId];
+        AuctionInfo storage currentInfo = auctionData[currentId];
         items[currentIndex] = currentItem;
+        info[currentIndex] = currentInfo;
         currentIndex += 1;
       }
     }
-    return items;
+    return (items,info);
   }
 
   /* Returns only items that a user has purchased */
@@ -346,9 +348,16 @@ contract MarketPlace is ReentrancyGuard{
     return items;
     }
 
-    function unlistItem(uint itemId) external{
+    function unlistItem(uint itemId) external nonReentrant{
         require(!idToMarketItem[itemId].sold,"Sold items can't be unlisted");
         require(idToMarketItem[itemId].seller == msg.sender,"Sender is not lister");
+        if(idToMarketItem[itemId].isAuction){
+            AuctionInfo storage info = auctionData[itemId];
+            if(info.highestBid > 0){
+                payable(info.highestBidder).transfer(info.highestBid);
+            }
+            delete auctionData[itemId];
+        }
         delete idToMarketItem[itemId];
         idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
