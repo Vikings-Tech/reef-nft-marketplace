@@ -65,7 +65,7 @@ const UserCollections = () => {
     }
 
     return (<>
-        <div className="container mx-auto  lg:px-8 mt-4">
+        <div className="container mx-auto  lg:px-8 mt-4 pb-16">
             <Tabs tabs={["Your Collections", "All Collections"]}>
                 {!userCollections ? <Spinner /> :
                     userCollections?.length === 0 ?

@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import CollectionCard from "../../Components/CollectionCard";
 import Text from "../../Components/Inputs/Text";
 import TextArea from "../../Components/Inputs/TextArea";
 import { uploadFile } from "../../config/pinata";
@@ -7,11 +6,14 @@ import Web3Context, { Web3Provider } from "../../Context/Web3Context";
 import { create } from 'ipfs-http-client'
 import { pinFileToIPFS, pinJSONToIPFS, unPin } from "../../config/axios";
 import { useHistory } from "react-router";
+import CollectionCard from "./CollectionCard";
+import { useAlert } from "tr-alerts";
 const fs = require('fs');
 
 const client = create('https://ipfs.infura.io:5001/api/v0')
 
 const CreateCollection = () => {
+    const showAlert = useAlert();
     const history = useHistory();
     const [cost, setCost] = useState()
 
@@ -30,7 +32,11 @@ const CreateCollection = () => {
         getF();
     }, [])
     const createCollectionFromData = async () => {
+        showAlert('Alert!', "Uploading File to IPFS.....", 'primary', 1000);
+
         const added = await pinFileToIPFS(metaData.file);
+        showAlert('Alert!', "File Uploaded, uploading metadata....", 'primary', 1000);
+
         console.log(added);
         const { IpfsHash } = added.data;
         const newJson = {
@@ -40,6 +46,8 @@ const CreateCollection = () => {
             image: IpfsHash,
         }
         const finalHash = await pinJSONToIPFS({ ...metaData, image: IpfsHash });
+        showAlert('Alert!', "Meta Data Uploaded! Please complete the transaction", 'primary', 3000);
+
         const txn = await createCollection(metaData.name, metaData.symbol, finalHash.data.IpfsHash, cost.toString());
         if (txn) {
             console.log(txn);
@@ -47,6 +55,8 @@ const CreateCollection = () => {
 
         }
         else {
+            showAlert('Alert!', "Failure, reverting changed", 'danger', 3000);
+
             unPin(IpfsHash);
             unPin(finalHash.data.IpfsHash);
         }

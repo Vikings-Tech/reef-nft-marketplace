@@ -36,17 +36,17 @@ const BuyNFTPage = () => {
                 <div className="flex justify-around">
                     <div>
                         <div className="font-bold text-2xl my-4 text-gray-600">Price</div>
-                        <div className="font-semibold text-xl">{utils.formatEther(price)} eth</div>
+                        <div className="font-semibold text-xl">{utils.formatEther(price)} reef</div>
                     </div>
                     <div>
                         <div className="font-bold text-2xl my-4 text-gray-600">Royalty</div>
-                        <div className="font-semibold text-xl">{utils.formatEther(royalty) * 100}%</div>
+                        <div className="font-semibold text-xl">{utils.formatEther(royalty)} reef</div>
 
                     </div>
                 </div>
                 <button
                     onClick={() => { onClickBuyNFT() }}
-                    class="block w-48 truncate text-md px-4 py-2 rounded text-white ml-2 font-bold hover:text-white mt-4 hover:bg-red-800 bg-primary lg:mt-0">Buy NFT</button>
+                    class="block w-48 truncate text-md mx-auto px-4 py-2 rounded text-white  font-bold hover:text-white mt-4 hover:bg-red-800 bg-primary lg:mt-0">Buy NFT</button>
 
 
 

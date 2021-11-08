@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -6,11 +7,11 @@ const Home = () => {
         <div className="mx-auto max-w-7xl w-full pt-16 pb-20 text-center lg:py-48 lg:text-left">
             <div className="px-4 lg:w-1/2 sm:px-8 xl:pr-16">
                 <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl">
-                    <span className="block xl:inline">Discover, Create and sell</span>{' '}
+                    <span className="block xl:inline">Your one stop to Create and Sell</span>{' '}
                     <span className="block text-primary xl:inline">NFTs</span>
                 </h1>
                 <p className="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl">
-                    Some random cool thing That's gonna blow people's mind
+                    The coolest NFT Marketplace on Reef Chain ;)
                 </p>
                 <div className="mt-10 sm:flex sm:justify-center lg:justify-start">
                     <div className="rounded-md shadow">

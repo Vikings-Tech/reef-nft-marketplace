@@ -281,6 +281,16 @@ export const Web3Provider = (props) => {
         const result = await marketPlaceContract.fetchUserBids();
         console.log(result);
     }
+    functionsToExport.startBidListening = async (onBidUpdate) => {
+        // const marketPlaceContract = new Contract(nftMarketplaceAddress, MarketPlaceABI, signer);
+        // marketPlaceContract.on("MarketItemBid", (a, b, c) => {
+        //     console.log(a);
+        //     console.log(b);
+        //     console.log(c);
+        // })
+
+
+    }
 
     return (<Web3Context.Provider value={{ account, ...functionsToExport }}>
         {props.children}

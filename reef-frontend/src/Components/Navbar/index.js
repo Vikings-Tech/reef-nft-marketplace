@@ -44,7 +44,7 @@ const Navbar = () => {
             <div class="text-md font-bold items-center  text-blue-700 ">
                 <Link to="/myCollections"
                     class="block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">
-                    My Collections
+                    Collections
                 </Link>
                 <Link to="/explore"
                     class=" block mt-4 lg:inline-block lg:mt-0 text-primary px-4 py-2 rounded  mr-2">

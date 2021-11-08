@@ -11,13 +11,19 @@ import Web3Context from "../../Context/Web3Context";
 
 const ExploreCollections = () => {
     const { selectedNFTtoBuy, setSelectedNFTtoBuy } = useContext(ExplorePageContext);
-    const { fetchMarketItems, fetchMyNFTs, fetchItemsCreated } = useContext(Web3Context);
+    const { fetchMarketItems, fetchMyNFTs, fetchItemsCreated, startBidListening } = useContext(Web3Context);
     const [allCollections, setAllCollections] = useState(undefined);
     const [myItemsListed, setMyItemsListed] = useState(undefined);
     const [myOwnedItems, setMyOwnedItems] = useState(undefined);
     useEffect(() => {
+        startBidListening();
         const fetch = async () => {
-            setAllCollections(await fetchMarketItems());
+            const result = await fetchMarketItems()
+            const collectionsArray = result[0];
+            const auctionArray = result[1];
+            const allCollectionsData = collectionsArray.map((e, index) => ({ collection: e, auction: auctionArray[index] }));
+
+            setAllCollections(allCollectionsData);
             setMyItemsListed(await fetchItemsCreated());
             setMyOwnedItems(await fetchMyNFTs());
             setSelectedNFTtoBuy({});
@@ -27,13 +33,13 @@ const ExploreCollections = () => {
     }, [])
 
     return (<>
-        <div className="container mx-auto px-2 lg:px-4 mt-4">
+        <div className="container mx-auto px-2 lg:px-4 mt-4 mb-16">
             <Tabs tabs={["Marketplace", "Listed", "Owned"]}>
                 {/*NFTs for sale*/}
                 {!allCollections ? <Spinner /> :
                     <div className="grid grid-cols-3 gap-4">
-                        {allCollections.map((collection) => {
-                            return (<NFTForSaleCard {...collection} />);
+                        {allCollections.map((data) => {
+                            return (<NFTForSaleCard {...(data.collection)} auction={data.auction} />);
                         })}
                     </div>
 

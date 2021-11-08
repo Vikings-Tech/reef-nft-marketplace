@@ -7,14 +7,31 @@ import { utils } from "ethers";
 import Text from "../Inputs/Text";
 
 const NFTForSaleCard = (props) => {
-    const { metaData = {}, tokenId, nftContract, price, royalty, creator, isAuction, itemId } = props
+    const { metaData = {}, tokenId, nftContract, price, royalty, creator, isAuction, itemId, auction } = props
     const { selectedNFTtoBuy, setSelectedNFTtoBuy } = useContext(ExplorePageContext);
     const history = useHistory()
     const { tokenURI, createAuctionBid } = useContext(Web3Context);
     const [currentMetaData, setCurrentMetaData] = useState({});
     const [nftData, setNftData] = useState();
     const [bid, setBid] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(new Date());
     console.log(props);
+    const calculateTimeLeft = (endTime) => {
+        let currDate = Date.now();
+        console.log(endTime);
+        const actualDate = new Date(parseInt(endTime) * 1000);
+        console.log(actualDate);
+        console.log(currDate);
+        setTimeLeft(new Date(actualDate - currDate))
+    };
+    useEffect(() => {
+        if (auction?.timeEnding) {
+            const timer = setTimeout(() => {
+                calculateTimeLeft(auction.timeEnding.toString());
+            }, 1000);
+        }
+    });
+
     useEffect(() => {
         const fetchMetaData = async () => {
             const nftData = {
@@ -24,6 +41,7 @@ const NFTForSaleCard = (props) => {
             nftData["metaData"] = (await getJSONfromHash(nftData.tokenURI)).data;
             setNftData(nftData);
             setCurrentMetaData(nftData.metaData);
+            calculateTimeLeft(auction.timeEnding.toString());
         }
         fetchMetaData();
 
@@ -34,7 +52,7 @@ const NFTForSaleCard = (props) => {
         history.push("/explore/detail");
     }
     const handlePlace = async () => {
-        await createAuctionBid(itemId, price);
+        await createAuctionBid(itemId, bid);
     }
 
     return (<div class="w-96  bg-white rounded-lg shadow-lg overflow-hidden flex flex-col ">
@@ -50,15 +68,23 @@ const NFTForSaleCard = (props) => {
 
         </div>
         {isAuction &&
-            <div className="flex">
-                <Text
-                    title="Bid"
-                    value={bid}
-                    onChange={(e) => setBid(e.target.value)} />
-                <button
-                    className=" mt-3 inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                    onClick={handlePlace}>Place Bid</button>
-            </div>
+            <>
+                <div class="text-center py-8 sm:py-6 px-2">
+                    <p class="text-base text-gray-400 font-normal">Highest Bid: {utils.formatEther(auction.highestBid)}</p>
+                    <p class="text-base text-gray-400 font-normal truncate">Highest Bidder: {utils.formatEther(auction.highestBidder)}</p>
+                    <p class="text-base text-gray-400 font-normal">Time Left: {Math.floor(timeLeft / 86400000)} Days, {timeLeft.getHours()} Hours, {timeLeft.getMinutes()} Minutes, {timeLeft.getSeconds()} Seconds.</p>
+
+                </div>
+                <div className="flex py-8 sm:py-6 px-2">
+                    <Text
+                        title="Bid"
+                        value={bid}
+                        onChange={(e) => setBid(e.target.value)} />
+                    <button
+                        className=" mt-3 inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                        onClick={handlePlace}>Place Bid</button>
+                </div>
+            </>
         }
     </div >);
 }
