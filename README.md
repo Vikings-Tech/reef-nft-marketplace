@@ -1,7 +1,5 @@
 # Reef NFT Marketplace
 
-![Logo](./Assets/logo.svg)
-
 ## Overview
 
 Your one stop to Create and Sell NFTs. An NFT Marketplace with EVM Solidity support on Reef chain
