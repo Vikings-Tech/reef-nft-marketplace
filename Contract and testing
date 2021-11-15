@@ -1,0 +1,5 @@
+Hardhat Reef plugin
+Hardhat reef plugin allows to deploy and interact with contracts through hardhat and reef.js.
+
+Installation
+yarn add @reef-defi/hardhat-reef 
